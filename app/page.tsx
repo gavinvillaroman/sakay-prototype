@@ -29,22 +29,22 @@ export default function HomePage() {
                 Self-drive cars, motorbikes, and vans across Metro Manila, Cabanatuan, and Siargao. With or without a driver — your call.
               </p>
 
-              <div className="flex items-center gap-2 bg-white border hairline rounded-full p-1.5 max-w-[560px] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)]">
+              <div className="flex items-center gap-2 bg-surface border hairline rounded-full p-1.5 max-w-[560px] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)]">
                 <div className="flex items-center gap-2 flex-1 px-4">
-                  <MapPin size={16} className="text-gray-400" />
+                  <MapPin size={16} className="text-foreground/40" />
                   <input
                     placeholder="Where to drive?"
                     className="flex-1 outline-none text-[15px] py-2.5 bg-transparent"
                   />
                 </div>
-                <div className="w-px h-6 bg-gray-200" />
+                <div className="w-px h-6 bg-foreground/10" />
                 <input
                   placeholder="May 17 → 20"
-                  className="w-32 outline-none text-[15px] py-2.5 px-3 bg-transparent text-gray-500"
+                  className="w-32 outline-none text-[15px] py-2.5 px-3 bg-transparent text-foreground/60"
                 />
                 <Link
                   href="/browse"
-                  className="bg-black text-white rounded-full px-5 py-2.5 font-semibold text-[14px] flex items-center gap-1.5 flex-shrink-0"
+                  className="bg-accent text-accent-fg rounded-full px-5 py-2.5 font-semibold text-[14px] flex items-center gap-1.5 flex-shrink-0"
                 >
                   <Search size={15} /> Search
                 </Link>
@@ -85,9 +85,9 @@ export default function HomePage() {
             <div className="text-[22px] font-bold tracking-tightest leading-tight">Good morning, Gavin</div>
           </div>
         </div>
-        <Link href="/browse" className="flex items-center gap-2.5 bg-gray-100 rounded-full px-4 py-3 text-[14px]">
-          <Search size={17} className="text-gray-500" />
-          <span className="text-gray-500">Search cars, hosts, cities</span>
+        <Link href="/browse" className="flex items-center gap-2.5 bg-surface-soft rounded-full px-4 py-3 text-[14px]">
+          <Search size={17} className="text-foreground/50" />
+          <span className="text-foreground/50">Search cars, hosts, cities</span>
         </Link>
       </section>
 
@@ -100,9 +100,9 @@ export default function HomePage() {
               <Link
                 key={c.id}
                 href={`/browse?cat=${c.id}`}
-                className="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full border hairline bg-white text-[13px] font-medium hover:shadow-sm transition"
+                className="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full border hairline bg-surface text-[13px] font-medium hover:shadow-sm transition"
               >
-                <Icon size={14} strokeWidth={2} className="text-gray-600" />
+                <Icon size={14} strokeWidth={2} className="text-foreground/60" />
                 {c.label}
               </Link>
             );
@@ -113,15 +113,15 @@ export default function HomePage() {
       {/* Mobile-only ride card */}
       {flags.ride && (
         <section className="md:hidden px-5">
-          <Link href="/ride" className="flex items-center gap-3 p-4 rounded-2xl border hairline active:bg-gray-50">
-            <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center flex-shrink-0">
+          <Link href="/ride" className="flex items-center gap-3 p-4 rounded-2xl border hairline active:bg-surface-soft">
+            <div className="w-10 h-10 rounded-full bg-accent text-accent-fg flex items-center justify-center flex-shrink-0">
               <CarIcon size={18} />
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[14px] font-semibold tracking-tight">Need a ride now?</div>
-              <div className="text-[11px] text-gray-500">Hail a driver in seconds — pay per trip.</div>
+              <div className="text-[11px] text-foreground/50">Hail a driver in seconds — pay per trip.</div>
             </div>
-            <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />
+            <ChevronRight size={16} className="text-foreground/40 flex-shrink-0" />
           </Link>
         </section>
       )}

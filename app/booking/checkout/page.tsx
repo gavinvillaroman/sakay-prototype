@@ -59,7 +59,7 @@ export default function Checkout() {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-white">
+    <div className="flex-1 flex flex-col bg-background">
       <AppHeader title="Confirm and pay" />
       <div className="flex-1 overflow-y-auto no-scrollbar pb-4">
         {/* Item card */}
@@ -140,11 +140,11 @@ export default function Checkout() {
         </div>
       </div>
 
-      <div className="flex-shrink-0 border-t hairline bg-white px-5 py-3">
+      <div className="flex-shrink-0 border-t hairline bg-background px-5 py-3">
         <button
           onClick={confirm}
           disabled={submitting}
-          className="w-full bg-black text-white rounded-full py-3.5 font-semibold text-[14px] disabled:opacity-60"
+          className="w-full bg-accent text-accent-fg rounded-full py-3.5 font-semibold text-[14px] disabled:opacity-60"
         >
           {submitting ? "Confirming…" : `Pay ₱${total.toLocaleString()}`}
         </button>

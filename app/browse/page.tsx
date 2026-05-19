@@ -75,10 +75,12 @@ function BrowseInner() {
               key={c.id}
               onClick={() => setFilter(c.id)}
               className={`flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-[13px] font-medium transition ${
-                active ? "bg-black text-white border-black" : "bg-white text-black hairline hover:shadow-sm"
+                active
+                  ? "bg-accent text-accent-fg border-accent"
+                  : "bg-surface text-foreground hairline hover:shadow-sm"
               }`}
             >
-              <Icon size={14} strokeWidth={2} className={active ? "opacity-90" : "text-gray-600"} />
+              <Icon size={14} strokeWidth={2} className={active ? "opacity-90" : "text-foreground/60"} />
               {c.label}
             </button>
           );
@@ -93,7 +95,7 @@ function BrowseInner() {
               const list = cars.filter((c) => c.hostName === h);
               return (
                 <Link key={h} href={`/h/${hostSlug(h)}`} className="flex items-center gap-3 p-3 rounded-2xl border hairline hover:shadow-sm">
-                  <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-accent text-accent-fg flex items-center justify-center flex-shrink-0">
                     <Building2 size={18} />
                   </div>
                   <div className="flex-1 min-w-0">

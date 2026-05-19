@@ -20,7 +20,7 @@ export default function TopNav() {
       (t.id !== "black" || flags.black),
   );
   return (
-    <header className="hidden md:block sticky top-0 z-30 bg-white/90 backdrop-blur border-b hairline">
+    <header className="hidden md:block sticky top-0 z-30 bg-background/90 backdrop-blur border-b hairline">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-[20px] font-bold tracking-tightest">Sakay</span>
@@ -34,7 +34,9 @@ export default function TopNav() {
                 key={t.id}
                 href={t.href}
                 className={`px-4 py-2 rounded-full text-[14px] font-medium transition ${
-                  active ? "bg-black text-white" : "text-gray-700 hover:bg-gray-100"
+                  active
+                    ? "bg-accent text-accent-fg"
+                    : "text-foreground/70 hover:bg-surface-soft"
                 }`}
               >
                 {t.label}
@@ -46,14 +48,14 @@ export default function TopNav() {
         <div className="flex items-center gap-2">
           <Link
             href="/browse"
-            className="flex items-center gap-2 px-4 py-2 rounded-full border hairline text-[13px] text-gray-600 hover:shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 rounded-full border hairline text-[13px] text-foreground/60 hover:shadow-sm"
           >
             <Search size={14} />
             <span>Search</span>
           </Link>
           <Link
             href="/profile"
-            className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+            className="w-10 h-10 rounded-full bg-surface-soft hover:opacity-80 flex items-center justify-center"
           >
             <User size={18} />
           </Link>

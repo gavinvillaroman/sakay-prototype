@@ -22,7 +22,7 @@ export default function HostProfile({ params }: { params: Promise<{ slug: string
   const photo = cars[0]?.hostPhoto ?? "https://i.pravatar.cc/150";
 
   return (
-    <div className="max-w-5xl mx-auto bg-white pb-12">
+    <div className="max-w-5xl mx-auto bg-background pb-12">
       <div className="md:hidden"><AppHeader title="Host" /></div>
       <div className="md:pt-8">
         {/* Hero */}
@@ -38,14 +38,17 @@ export default function HostProfile({ params }: { params: Promise<{ slug: string
               style={{ width: 88, height: 88 }}
             />
             {isSuperhost && (
-              <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-black text-white flex items-center justify-center border-2 border-white">
+              <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-accent text-accent-fg flex items-center justify-center border-2 border-background">
                 <BadgeCheck size={15} strokeWidth={2.5} />
               </span>
             )}
           </div>
-          <h1 className="text-[24px] font-bold tracking-tightest mt-3">{host.name}</h1>
-          <div className="text-[12px] text-gray-500 mt-1">
-            {isSuperhost ? "Superhost" : "Verified host"} · Joined 2024
+          <div className="flex items-center gap-1.5 mt-3">
+            <h1 className="text-[24px] font-bold tracking-tightest">{host.name}</h1>
+            <BadgeCheck size={18} className="text-accent" />
+          </div>
+          <div className="text-[12px] text-foreground/60 mt-1">
+            Verified fleet operator · Joined 2024
           </div>
         </div>
 
@@ -58,19 +61,17 @@ export default function HostProfile({ params }: { params: Promise<{ slug: string
 
         {/* Bio */}
         <div className="px-5 pb-5">
-          <p className="text-[14px] text-gray-700 leading-relaxed">
-            {host.name === "Shotcorner Corporation"
-              ? "Shotcorner Corporation operates a small fleet of well-maintained vans in Metro Manila and Nueva Ecija. Every vehicle is sanitized between trips and serviced on a strict schedule."
-              : `${host.name} is a verified Sakay host. Each booking includes responsive support, on-time pickup, and Sakay's standard ₱2M protection plan.`}
+          <p className="text-[14px] text-foreground/80 leading-relaxed">
+            SHOTCORNER CORP. operates Sakay&apos;s nationwide fleet — sedans, SUVs, vans, and bikes across Metro Manila, Nueva Ecija, and Siargao. Every vehicle is sanitized between trips, serviced on a strict schedule, and covered by Sakay&apos;s ₱2M protection plan.
           </p>
         </div>
 
         <div className="px-5 mb-4 grid grid-cols-2 gap-2 text-[12px]">
-          <Badge icon={ShieldCheck} label="Identity verified" />
-          <Badge icon={MapPin} label={`Based in ${cars[0]?.location ?? "Philippines"}`} />
+          <Badge icon={ShieldCheck} label="Business verified" />
+          <Badge icon={MapPin} label="Nationwide fleet" />
         </div>
 
-        <div className="h-px bg-gray-100 mx-5 mb-5" />
+        <div className="h-px bg-foreground/10 mx-5 mb-5" />
 
         {/* Listings */}
         <div className="px-5 mb-5">
@@ -84,7 +85,7 @@ export default function HostProfile({ params }: { params: Promise<{ slug: string
           </div>
         </div>
 
-        <div className="h-px bg-gray-100 mx-5" />
+        <div className="h-px bg-foreground/10 mx-5" />
 
         {/* Reviews */}
         {reviews.length > 0 && (
@@ -101,7 +102,7 @@ function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="rounded-2xl border hairline p-3 text-center">
       <div className="text-[20px] font-bold tracking-tight">{value}</div>
-      <div className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold mt-0.5">
+      <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mt-0.5">
         {label}
       </div>
     </div>
@@ -111,7 +112,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 function Badge({ icon: Icon, label }: { icon: React.ComponentType<{ size?: number; className?: string }>; label: string }) {
   return (
     <div className="flex items-center gap-2 border hairline rounded-full px-3 py-2">
-      <Icon size={14} className="text-gray-700" />
+      <Icon size={14} className="text-foreground/70" />
       <span className="truncate">{label}</span>
     </div>
   );

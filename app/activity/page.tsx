@@ -78,7 +78,9 @@ export default function ActivityPage() {
                 key={t.id}
                 onClick={() => setType(t.id)}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[12px] font-medium border transition ${
-                  active ? "bg-black text-white border-black" : "hairline bg-white text-black"
+                  active
+                    ? "bg-accent text-accent-fg border-accent"
+                    : "hairline bg-surface text-foreground"
                 }`}
               >
                 {t.label}

@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Crown, Car, ShieldAlert, Phone, Check, ArrowLeft } from "lucide-react";
+import { useSubscription } from "@/lib/subscription";
 
 const perks = [
   { icon: Phone, label: "Chauffeurs on demand", sub: "Uniformed pro drivers, by the hour or full day" },
@@ -11,12 +12,19 @@ const perks = [
 
 export default function BlackPage() {
   const router = useRouter();
+  const { isBlackMember, activate, cancel } = useSubscription();
+
   return (
     <div className="flex-1 flex flex-col bg-black text-white">
       <div className="flex items-center justify-between px-5 h-12">
         <button onClick={() => router.back()} className="w-9 h-9 -ml-2 flex items-center justify-center">
           <ArrowLeft size={22} />
         </button>
+        {isBlackMember && (
+          <div className="text-[10px] uppercase tracking-[0.3em] opacity-70 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-white" /> Active
+          </div>
+        )}
       </div>
       <div className="flex-1 overflow-y-auto no-scrollbar px-6 pb-8">
         <div className="text-[10px] uppercase tracking-[0.3em] opacity-70 mb-3">Membership</div>
@@ -51,7 +59,9 @@ export default function BlackPage() {
             <div className="text-[12px] opacity-70 pb-1.5">/ month</div>
           </div>
           <div className="text-[12px] opacity-80 leading-relaxed mb-4">
-            Cancel anytime. First month includes 2 chauffeured trips on us.
+            {isBlackMember
+              ? "You're a Black member. The whole app stays in Black mode while your membership is active."
+              : "Cancel anytime. First month includes 2 chauffeured trips on us. Activating flips the entire app to Black."}
           </div>
           <ul className="text-[13px] space-y-1.5 mb-4 opacity-90">
             <li className="flex items-center gap-2"><Check size={14} /> 4 chauffeured hours included monthly</li>
@@ -59,9 +69,21 @@ export default function BlackPage() {
             <li className="flex items-center gap-2"><Check size={14} /> Priority dispatch — no surge pricing</li>
             <li className="flex items-center gap-2"><Check size={14} /> Direct line to a Sakay concierge</li>
           </ul>
-          <button className="w-full bg-white text-black rounded-full py-3.5 font-semibold text-[14px]">
-            Activate membership
-          </button>
+          {isBlackMember ? (
+            <button
+              onClick={cancel}
+              className="w-full border border-white/30 rounded-full py-3.5 font-semibold text-[14px] active:bg-white/5"
+            >
+              Cancel membership
+            </button>
+          ) : (
+            <button
+              onClick={activate}
+              className="w-full bg-white text-black rounded-full py-3.5 font-semibold text-[14px] active:opacity-90"
+            >
+              Activate membership
+            </button>
+          )}
         </div>
 
         <div className="text-[10px] opacity-50 text-center tracking-wide">
