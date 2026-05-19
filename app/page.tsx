@@ -1,15 +1,23 @@
 "use client";
-import { Search, Bike, Car as CarIcon, ChevronRight, Crown, ShieldCheck, MapPin } from "lucide-react";
+import { Search, ChevronRight, Crown, ShieldCheck, MapPin, Car, UserCheck, Sparkles, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { cars, experiences, categories } from "@/lib/mock";
+import { cars, experiences } from "@/lib/mock";
 import CarCard from "@/components/CarCard";
 import ExperienceCard from "@/components/ExperienceCard";
 import { flags } from "@/lib/flags";
+
+const SERVICE_TILES = [
+  { href: "/browse?driver=self-drive", label: "Self-drive", Icon: Car, bg: "bg-white/15" },
+  { href: "/browse?driver=with-driver", label: "Chauffeured", Icon: UserCheck, bg: "bg-white/15" },
+  { href: "/black", label: "Black", Icon: Crown, bg: "bg-black", text: "text-white" },
+  { href: "/browse", label: "More", Icon: MoreHorizontal, bg: "bg-white/15" },
+];
 
 export default function HomePage() {
   const featured = experiences[0];
   const motorcycles = cars.filter((c) => c.category === "motorcycle");
   const nearby = cars.filter((c) => c.category !== "motorcycle");
+  const trending = nearby.slice(0, 6);
 
   return (
     <div>
@@ -77,58 +85,110 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* MOBILE HEADER */}
-      <section className="md:hidden px-5 pt-3 pb-2">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <div className="text-[11px] uppercase tracking-widest text-gray-500 font-semibold">Sakay</div>
-            <div className="text-[22px] font-bold tracking-tightest leading-tight">Good morning, Gavin</div>
+      {/* MOBILE — colored header bleeds into status-bar zone */}
+      <section
+        className="md:hidden bg-accent text-accent-fg"
+        style={{
+          marginTop: "calc(-1 * env(safe-area-inset-top))",
+          paddingTop: "calc(env(safe-area-inset-top) + 12px)",
+          paddingBottom: "20px",
+        }}
+      >
+        <div className="px-5">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.2em] opacity-80 font-semibold">Magandang araw</div>
+              <div className="text-[22px] font-bold tracking-tight leading-tight">Hi, Gavin</div>
+            </div>
+            <button className="flex items-center gap-1 text-[12px] font-medium bg-white/15 rounded-full px-3 py-1.5">
+              <MapPin size={13} /> BGC, Taguig
+            </button>
           </div>
+
+          <Link
+            href="/browse"
+            className="flex items-center gap-2.5 bg-white rounded-full px-4 py-3 text-[14px] text-foreground/60 shadow-sm"
+          >
+            <Search size={17} className="text-foreground/50" />
+            <span>Where do you want to go?</span>
+          </Link>
         </div>
-        <Link href="/browse" className="flex items-center gap-2.5 bg-surface-soft rounded-full px-4 py-3 text-[14px]">
-          <Search size={17} className="text-foreground/50" />
-          <span className="text-foreground/50">Search cars, hosts, cities</span>
+      </section>
+
+      {/* MOBILE — service tile grid (4 across) */}
+      <section className="md:hidden px-5 -mt-6">
+        <div className="bg-surface rounded-2xl border hairline p-3 grid grid-cols-4 gap-2 shadow-[0_4px_24px_-12px_rgba(0,0,0,0.15)]">
+          {SERVICE_TILES.map(({ href, label, Icon, bg, text }) => (
+            <Link
+              key={label}
+              href={href}
+              className="flex flex-col items-center justify-center gap-1.5 py-2 rounded-xl active:bg-surface-soft"
+            >
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${bg} ${text ?? "text-foreground"} ${bg === "bg-white/15" ? "bg-accent/10 text-accent" : ""}`}>
+                <Icon size={22} strokeWidth={2.2} />
+              </div>
+              <div className="text-[11px] font-semibold tracking-tight">{label}</div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* MOBILE — Promo banner */}
+      <section className="md:hidden px-5 mt-5">
+        <Link
+          href="/browse?driver=self-drive"
+          className="block relative overflow-hidden rounded-2xl bg-accent text-accent-fg p-5 active:opacity-95"
+        >
+          <div className="text-[11px] uppercase tracking-[0.2em] opacity-80 font-semibold mb-1">Trending</div>
+          <div className="text-[20px] font-bold tracking-tight leading-tight mb-1">
+            Cheaper. Faster.<br />Drive yourself.
+          </div>
+          <div className="text-[12px] opacity-90 mb-3">Self-drive cars from ₱2,800 / day</div>
+          <div className="inline-flex items-center gap-1 bg-white text-accent rounded-full px-4 py-1.5 text-[12px] font-semibold">
+            Book now <ChevronRight size={13} />
+          </div>
         </Link>
       </section>
 
-      {/* CATEGORIES */}
-      <section className="px-5 md:px-6 max-w-7xl mx-auto">
-        <div className="flex gap-2 py-3 overflow-x-auto no-scrollbar">
-          {categories.map((c) => {
-            const Icon = c.icon;
-            return (
-              <Link
-                key={c.id}
-                href={`/browse?cat=${c.id}`}
-                className="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full border hairline bg-surface text-[13px] font-medium hover:shadow-sm transition"
-              >
-                <Icon size={14} strokeWidth={2} className="text-foreground/60" />
-                {c.label}
-              </Link>
-            );
-          })}
+      {/* MOBILE — Trending carousel */}
+      <section className="md:hidden mt-6">
+        <div className="px-5 flex items-end justify-between mb-3">
+          <h2 className="text-[18px] font-bold tracking-tight">Trending in Metro Manila</h2>
+          <Link href="/browse" className="text-[12px] text-foreground/60">See all</Link>
+        </div>
+        <div className="flex gap-3 overflow-x-auto no-scrollbar px-5 pb-2">
+          {trending.map((c) => (
+            <div key={c.id} className="w-[68vw] max-w-[280px] flex-shrink-0">
+              <CarCard car={c} />
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Mobile-only ride card */}
-      {flags.ride && (
-        <section className="md:hidden px-5">
-          <Link href="/ride" className="flex items-center gap-3 p-4 rounded-2xl border hairline active:bg-surface-soft">
-            <div className="w-10 h-10 rounded-full bg-accent text-accent-fg flex items-center justify-center flex-shrink-0">
-              <CarIcon size={18} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-[14px] font-semibold tracking-tight">Need a ride now?</div>
-              <div className="text-[11px] text-foreground/50">Hail a driver in seconds — pay per trip.</div>
-            </div>
-            <ChevronRight size={16} className="text-foreground/40 flex-shrink-0" />
-          </Link>
-        </section>
-      )}
+      {/* MOBILE — Province strip */}
+      <section className="md:hidden px-5 mt-6">
+        <h2 className="text-[18px] font-bold tracking-tight mb-3">For the provinces</h2>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { label: "Cabanatuan", q: "Cabanatuan" },
+            { label: "Tagaytay", q: "Tagaytay" },
+            { label: "Siargao", q: "Siargao" },
+          ].map((p) => (
+            <Link
+              key={p.q}
+              href={`/browse?location=${p.q}`}
+              className="rounded-xl border hairline p-3 text-center active:bg-surface-soft"
+            >
+              <div className="text-[13px] font-semibold tracking-tight">{p.label}</div>
+              <div className="text-[10px] text-foreground/50">Explore</div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* Sakay Black */}
       {flags.black && (
-        <section className="max-w-7xl mx-auto px-5 md:px-6 mt-5 md:mt-12">
+        <section className="max-w-7xl mx-auto px-5 md:px-6 mt-6 md:mt-12">
           <Link href="/black" className="block relative overflow-hidden rounded-2xl md:rounded-3xl bg-black text-white p-5 md:p-10 group">
             <div className="md:grid md:grid-cols-2 md:gap-10 md:items-center">
               <div>
@@ -165,30 +225,30 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Motorbikes */}
-      <section className="max-w-7xl mx-auto px-5 md:px-6 mt-8 md:mt-16">
-        <div className="flex items-end justify-between mb-3 md:mb-5">
+      {/* Desktop-only — Motorbikes grid */}
+      <section className="hidden md:block max-w-7xl mx-auto px-6 mt-16">
+        <div className="flex items-end justify-between mb-5">
           <div>
-            <h2 className="text-[18px] md:text-[28px] font-semibold tracking-tightest flex items-center gap-2">
-              <Bike size={20} className="md:w-7 md:h-7" /> Motorbikes
+            <h2 className="text-[28px] font-semibold tracking-tightest flex items-center gap-2">
+              <Sparkles size={28} /> Motorbikes
             </h2>
-            <p className="text-[12px] md:text-[14px] text-gray-500 mt-1">Beat the traffic — self-drive only.</p>
+            <p className="text-[14px] text-gray-500 mt-1">Beat the traffic — self-drive only.</p>
           </div>
-          <Link href="/browse?cat=motorcycle" className="text-[12px] md:text-[14px] text-gray-500 hover:text-black">See all</Link>
+          <Link href="/browse?cat=motorcycle" className="text-[14px] text-gray-500 hover:text-black">See all</Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+        <div className="grid grid-cols-4 gap-6">
           {motorcycles.map((c) => <CarCard key={c.id} car={c} />)}
         </div>
       </section>
 
-      {/* Nearby */}
-      <section className="max-w-7xl mx-auto px-5 md:px-6 mt-8 md:mt-16 pb-12 md:pb-24">
+      {/* Available near you (desktop full grid, mobile compact list) */}
+      <section className="max-w-7xl mx-auto px-5 md:px-6 mt-6 md:mt-16 pb-12 md:pb-24">
         <div className="flex items-end justify-between mb-3 md:mb-5">
           <div>
-            <h2 className="text-[18px] md:text-[28px] font-semibold tracking-tightest">Available near you</h2>
+            <h2 className="text-[18px] md:text-[28px] font-bold md:font-semibold tracking-tight md:tracking-tightest">Available near you</h2>
             <p className="hidden md:block text-[14px] text-gray-500 mt-1">All hosted by verified Sakay partners.</p>
           </div>
-          <Link href="/browse" className="text-[12px] md:text-[14px] text-gray-500 hover:text-black">See all</Link>
+          <Link href="/browse" className="text-[12px] md:text-[14px] text-foreground/60 hover:text-foreground">See all</Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
           {nearby.map((c) => <CarCard key={c.id} car={c} />)}
