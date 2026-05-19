@@ -7,6 +7,7 @@ import { cars, getCarReviews, avgRating } from "@/lib/mock";
 import { hostSlug } from "@/lib/host";
 import Avatar from "@/components/Avatar";
 import Reviews from "@/components/Reviews";
+import DateRangeSheet from "@/components/DateRangeSheet";
 import { useApp } from "@/lib/store";
 import { useReviewStore } from "@/lib/reviewStore";
 import {
@@ -72,6 +73,7 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
   const minDate = plusDaysISO(today(), 1);
   const [startDate, setStartDate] = useState(minDate);
   const [endDate, setEndDate] = useState(plusDaysISO(minDate, 3));
+  const [sheetOpen, setSheetOpen] = useState(false);
   if (endDate <= startDate) {
     const fixed = plusDaysISO(startDate, 1);
     if (fixed !== endDate) setTimeout(() => setEndDate(fixed), 0);
@@ -171,37 +173,30 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
             </div>
           </div>
 
-          {/* Trip dates — mobile only (desktop has them in the sticky aside) */}
+          {/* Trip dates — opens Airbnb-style calendar sheet */}
           <div id="trip-dates" className="md:hidden mt-6 scroll-mt-20">
-            <h2 className="text-[18px] font-bold tracking-tight mb-3">Trip dates</h2>
-            <div className="rounded-2xl border hairline overflow-hidden">
+            <h2 className="text-[18px] font-bold tracking-tight mb-3">
+              {days} {days === 1 ? "day" : "days"} in {car.location.split(",")[0]}
+            </h2>
+            <button
+              onClick={() => setSheetOpen(true)}
+              className="tap w-full rounded-2xl border hairline overflow-hidden text-left"
+            >
               <div className="grid grid-cols-2 divide-x hairline">
-                <label className="p-4 block active:bg-surface-soft">
+                <div className="p-4">
                   <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Pickup</div>
-                  <input
-                    type="date"
-                    value={startDate}
-                    min={minDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full text-[16px] font-bold tracking-tight bg-transparent outline-none"
-                  />
-                </label>
-                <label className="p-4 block active:bg-surface-soft">
+                  <div className="text-[15px] font-bold tracking-tight">{fmtShort(startDate)}</div>
+                </div>
+                <div className="p-4">
                   <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Return</div>
-                  <input
-                    type="date"
-                    value={endDate}
-                    min={plusDaysISO(startDate, 1)}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full text-[16px] font-bold tracking-tight bg-transparent outline-none"
-                  />
-                </label>
+                  <div className="text-[15px] font-bold tracking-tight">{fmtShort(endDate)}</div>
+                </div>
               </div>
               <div className="border-t hairline px-4 py-2.5 text-[12px] text-foreground/60 flex items-center justify-between">
-                <span><span className="font-semibold text-foreground">{days} {days === 1 ? "day" : "days"}</span> selected</span>
+                <span><span className="font-semibold text-foreground">Tap to change</span></span>
                 <span className="text-accent font-semibold">Free cancellation &gt; 24h</span>
               </div>
-            </div>
+            </button>
           </div>
 
           <div className="h-px bg-hairline my-6 md:my-7" />
@@ -332,30 +327,21 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
               {rating.toFixed(2)} · {car.trips} {car.trips === 1 ? "booking" : "bookings"}
             </div>
 
-            <div className="border hairline rounded-2xl overflow-hidden mb-3">
+            <button
+              onClick={() => setSheetOpen(true)}
+              className="tap w-full border hairline rounded-2xl overflow-hidden mb-3 text-left"
+            >
               <div className="grid grid-cols-2 divide-x hairline">
-                <label className="p-3 cursor-text block">
+                <div className="p-3">
                   <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-0.5">Pickup</div>
-                  <input
-                    type="date"
-                    value={startDate}
-                    min={minDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full text-[13px] font-semibold bg-transparent outline-none"
-                  />
-                </label>
-                <label className="p-3 cursor-text block">
+                  <div className="text-[13px] font-semibold">{fmtShort(startDate)}</div>
+                </div>
+                <div className="p-3">
                   <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-0.5">Return</div>
-                  <input
-                    type="date"
-                    value={endDate}
-                    min={plusDaysISO(startDate, 1)}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full text-[13px] font-semibold bg-transparent outline-none"
-                  />
-                </label>
+                  <div className="text-[13px] font-semibold">{fmtShort(endDate)}</div>
+                </div>
               </div>
-            </div>
+            </button>
 
             {car.blackOnly ? (
               <Link href="/black" className="tap block w-full bg-black text-white rounded-full py-3.5 font-semibold text-[14px] text-center">
@@ -386,13 +372,9 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
         className="md:hidden fixed inset-x-0 z-20 border-t hairline bg-background px-5 py-3 flex items-center justify-between gap-3"
         style={{ bottom: "calc(env(safe-area-inset-bottom) + 56px)" }}
       >
-        <a
-          href="#trip-dates"
-          onClick={(e) => {
-            e.preventDefault();
-            document.getElementById("trip-dates")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
-          className="min-w-0 flex-1 tap"
+        <button
+          onClick={() => setSheetOpen(true)}
+          className="min-w-0 flex-1 tap text-left"
         >
           <div className="text-[16px] font-bold tracking-tight underline underline-offset-2">
             ₱{total.toLocaleString()}
@@ -401,7 +383,7 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
             For {days} {days === 1 ? "day" : "days"} · {fmtShort(startDate)} – {fmtShort(endDate)} <span className="text-accent">· change</span>
           </div>
           <div className="text-[10.5px] text-accent font-semibold mt-0.5">Free cancellation</div>
-        </a>
+        </button>
         {car.blackOnly ? (
           <Link href="/black" className="tap bg-black text-white rounded-full px-7 py-3.5 font-semibold text-[14.5px] flex-shrink-0">
             Join Black
@@ -413,6 +395,16 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
         )}
       </div>
       <div className="md:hidden h-24" />
+
+      <DateRangeSheet
+        open={sheetOpen}
+        startDate={startDate}
+        endDate={endDate}
+        minDate={minDate}
+        priceLabel={`₱${car.pricePerDay.toLocaleString()} / day`}
+        onClose={() => setSheetOpen(false)}
+        onSave={(s, e) => { setStartDate(s); setEndDate(e); }}
+      />
     </div>
   );
 }
