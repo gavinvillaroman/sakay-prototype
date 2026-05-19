@@ -133,23 +133,33 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
             </div>
           </div>
 
-          <div className="h-px bg-gray-100 my-5 md:my-7" />
-
-          {/* Driver options */}
-          <div className="text-[10px] md:text-[11px] uppercase tracking-widest text-gray-500 font-semibold mb-2">Driver</div>
-          <div className="flex gap-2 md:max-w-md">
-            {(car.driverOption === "with-driver" || car.driverOption === "both") && (
-              <div className="flex-1 border-2 border-black rounded-2xl p-3">
-                <div className="text-[13px] md:text-[14px] font-semibold tracking-tight">With driver</div>
-                <div className="text-[11px] md:text-[12px] text-gray-500">Pro driver included</div>
-              </div>
-            )}
-            {(car.driverOption === "self-drive" || car.driverOption === "both") && (
-              <div className="flex-1 border hairline rounded-2xl p-3">
-                <div className="text-[13px] md:text-[14px] font-semibold tracking-tight">Self-drive</div>
-                <div className="text-[11px] md:text-[12px] text-gray-500">You drive · license required</div>
-              </div>
-            )}
+          {/* Date selector — sits right under the stats, big and tappable */}
+          <div className="md:hidden mt-4 rounded-2xl border hairline overflow-hidden">
+            <div className="grid grid-cols-2 divide-x hairline">
+              <label className="p-3.5 block active:bg-surface-soft">
+                <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Pickup</div>
+                <input
+                  type="date"
+                  value={startDate}
+                  min={minDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full text-[15px] font-bold tracking-tight bg-transparent outline-none"
+                />
+              </label>
+              <label className="p-3.5 block active:bg-surface-soft">
+                <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Return</div>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={plusDaysISO(startDate, 1)}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full text-[15px] font-bold tracking-tight bg-transparent outline-none"
+                />
+              </label>
+            </div>
+            <div className="border-t hairline px-3.5 py-2 text-[11px] text-foreground/60">
+              <span className="font-semibold text-foreground">{days} {days === 1 ? "day" : "days"}</span> · driver option selected at checkout
+            </div>
           </div>
 
           <div className="h-px bg-gray-100 my-5 md:my-7" />
@@ -206,32 +216,6 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
           <div className="h-px bg-gray-100 my-5 md:my-7" />
 
           <Reviews reviews={mergedReviews} rating={rating} />
-
-          {/* Mobile date picker — desktop has its own in the sticky aside */}
-          <div className="md:hidden mt-6 border hairline rounded-2xl overflow-hidden">
-            <div className="grid grid-cols-2 divide-x hairline">
-              <label className="p-3 block">
-                <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-0.5">Pickup</div>
-                <input
-                  type="date"
-                  value={startDate}
-                  min={minDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full text-[14px] font-semibold bg-transparent outline-none"
-                />
-              </label>
-              <label className="p-3 block">
-                <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-0.5">Return</div>
-                <input
-                  type="date"
-                  value={endDate}
-                  min={plusDaysISO(startDate, 1)}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full text-[14px] font-semibold bg-transparent outline-none"
-                />
-              </label>
-            </div>
-          </div>
         </div>
 
         {/* Right column: sticky booking card (desktop only) */}
@@ -294,10 +278,10 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
       <div className="md:hidden fixed inset-x-0 z-20 border-t hairline bg-background px-5 py-3 flex items-center justify-between" style={{ bottom: "calc(env(safe-area-inset-bottom) + 56px)" }}>
         <div>
           <div className="text-[18px] font-bold tracking-tight">
-            ₱{car.pricePerDay.toLocaleString()}
-            <span className="text-[13px] text-foreground/50 font-normal"> / day</span>
+            ₱{(car.pricePerDay * days).toLocaleString()}
+            <span className="text-[13px] text-foreground/50 font-normal"> · {days} {days === 1 ? "day" : "days"}</span>
           </div>
-          <span className="text-[11px] text-foreground/50">May 17 – May 20</span>
+          <span className="text-[11px] text-foreground/50">{fmtShort(startDate)} – {fmtShort(endDate)}</span>
         </div>
         {car.blackOnly ? (
           <Link href="/black" className="bg-black text-white rounded-full px-6 py-3 font-semibold text-[14px]">Join Sakay Black</Link>
