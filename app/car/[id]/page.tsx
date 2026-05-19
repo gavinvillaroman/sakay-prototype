@@ -12,7 +12,7 @@ import { useApp } from "@/lib/store";
 import { useReviewStore } from "@/lib/reviewStore";
 import {
   Star, Zap, ShieldCheck, Heart, Share, ArrowLeft, BadgeCheck,
-  Award, KeyRound, Snowflake, CalendarDays, MapPin, Flag, Camera, Leaf,
+  Award, KeyRound, Snowflake, CalendarDays, MapPin, Flag, Camera, Leaf, Pencil,
 } from "lucide-react";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -181,30 +181,53 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
             </div>
           </div>
 
-          {/* Trip dates — opens Airbnb-style calendar sheet */}
-          <div id="trip-dates" className="md:hidden mt-6 scroll-mt-20">
-            <h2 className="text-[18px] font-bold tracking-tight mb-3">
-              {days} {days === 1 ? "day" : "days"} in {car.location.split(",")[0]}
-            </h2>
-            <button
-              onClick={() => setSheetOpen(true)}
-              className="tap w-full rounded-2xl border hairline overflow-hidden text-left"
-            >
-              <div className="grid grid-cols-2 divide-x hairline">
-                <div className="p-4">
-                  <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Pickup</div>
-                  <div className="text-[15px] font-bold tracking-tight">{fmtShort(startDate)}</div>
+          {/* Your trip — Turo-style two-row section with pencil edits */}
+          <div id="trip-dates" className="md:hidden mt-7 scroll-mt-20">
+            <h2 className="text-[20px] font-bold tracking-tight mb-4">Your trip</h2>
+            <div className="divide-y divide-hairline">
+              {/* Trip dates */}
+              <button
+                onClick={() => setSheetOpen(true)}
+                className="tap w-full flex items-start gap-4 py-4 text-left"
+              >
+                <CalendarDays size={28} strokeWidth={1.5} className="flex-shrink-0 mt-1" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-[15.5px] font-bold tracking-tight">Trip dates</div>
+                  <div className="text-[13.5px] text-foreground/70 mt-0.5">
+                    {fmtShort(startDate)} at 10:00 AM
+                  </div>
+                  <div className="text-[13.5px] text-foreground/70">
+                    {fmtShort(endDate)} at 10:00 AM
+                  </div>
                 </div>
-                <div className="p-4">
-                  <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Return</div>
-                  <div className="text-[15px] font-bold tracking-tight">{fmtShort(endDate)}</div>
+                <span className="tap w-10 h-10 rounded-lg border hairline flex items-center justify-center flex-shrink-0">
+                  <Pencil size={15} />
+                </span>
+              </button>
+
+              {/* Pickup & return location */}
+              <button
+                className="tap w-full flex items-start gap-4 py-4 text-left"
+                onClick={() => { /* TODO: open pickup sheet */ }}
+              >
+                <MapPin size={28} strokeWidth={1.5} className="flex-shrink-0 mt-1" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-[15.5px] font-bold tracking-tight">Pickup &amp; return location</div>
+                  <div className="text-[13.5px] text-foreground/80 mt-0.5">
+                    Hosted by {car.hostName}
+                  </div>
+                  <div className="text-[13px] text-foreground/60">
+                    {car.location}
+                  </div>
                 </div>
-              </div>
-              <div className="border-t hairline px-4 py-2.5 text-[12px] text-foreground/60 flex items-center justify-between">
-                <span><span className="font-semibold text-foreground">Tap to change</span></span>
-                <span className="text-accent font-semibold">Free cancellation &gt; 24h</span>
-              </div>
-            </button>
+                <span className="tap w-10 h-10 rounded-lg border hairline flex items-center justify-center flex-shrink-0">
+                  <Pencil size={15} />
+                </span>
+              </button>
+            </div>
+            <div className="text-[12px] text-accent font-semibold mt-2">
+              Free cancellation &gt; 24h before pickup
+            </div>
           </div>
 
           <div className="h-px bg-hairline my-6 md:my-7" />
