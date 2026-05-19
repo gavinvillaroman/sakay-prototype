@@ -34,42 +34,42 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-3xl mx-auto bg-background pb-12">
-      {!loading && !isSignedIn && (
-        <div className="mx-5 md:mx-6 mt-4 md:mt-10 mb-2 rounded-2xl border hairline p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-accent text-accent-fg flex items-center justify-center flex-shrink-0">
-            <LogIn size={17} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[15px] font-semibold tracking-tight">Sign in to book</div>
-            <div className="text-[12px] text-foreground/60">Save trips, payment methods, and host listings.</div>
-          </div>
-          <Link
-            href="/auth/login"
-            className="rounded-full bg-accent text-accent-fg text-[12px] font-semibold tracking-tight px-4 py-2"
-          >
-            Sign in
-          </Link>
-        </div>
-      )}
-      <div className="px-5 md:px-6 pt-4 md:pt-10 pb-5">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-accent text-accent-fg flex items-center justify-center text-[20px] font-semibold tracking-tight flex-shrink-0">
-            {user.firstName[0]}{user.lastName[0]}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-[22px] font-bold tracking-tightest leading-tight truncate">
-              {user.firstName} {user.lastName}
-            </h1>
-            <div className="flex items-center gap-1.5 text-[12px] text-foreground/60 mt-0.5">
-              <Star size={11} className="fill-current" />
-              <span className="font-medium">{user.rating}</span>
-              <span className="text-foreground/40">·</span>
-              <span>{user.trips} trips</span>
-              <span className="text-foreground/40">·</span>
-              <span>Joined {user.joined}</span>
+      <div className="px-5 md:px-6 pt-6 md:pt-10 pb-5">
+        {isSignedIn ? (
+          <div className="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <div className="w-16 h-16 rounded-full bg-accent text-accent-fg flex items-center justify-center text-[20px] font-semibold tracking-tight flex-shrink-0">
+              {user.firstName[0]}{user.lastName[0]}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-[22px] font-bold tracking-tightest leading-tight truncate">
+                {user.firstName} {user.lastName}
+              </h1>
+              <div className="flex items-center gap-1.5 text-[12px] text-foreground/60 mt-0.5">
+                <Star size={11} className="fill-current" />
+                <span className="font-medium">{user.rating}</span>
+                <span className="text-foreground/40">·</span>
+                <span>{user.trips} trips</span>
+                <span className="text-foreground/40">·</span>
+                <span>Joined {user.joined}</span>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-surface-soft text-foreground/40 flex items-center justify-center flex-shrink-0">
+              <LogIn size={22} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-[22px] font-bold tracking-tightest leading-tight">Welcome to Sakay</h1>
+              <Link
+                href="/auth/login"
+                className="inline-flex mt-2 items-center gap-1.5 rounded-full bg-accent text-accent-fg text-[13px] font-semibold px-4 py-1.5 transition active:scale-95"
+              >
+                Sign in <ChevronRight size={13} />
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Sakay Black membership */}

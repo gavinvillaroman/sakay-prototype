@@ -31,7 +31,7 @@ export default function BottomNav() {
               <Icon
                 size={22}
                 strokeWidth={active ? 2.4 : 1.6}
-                className={active ? "text-accent" : "text-foreground/40"}
+                className={`${active ? "text-accent nav-active-pop" : "text-foreground/40"} transition-colors`}
               />
               <span
                 className={`text-[10px] font-medium tracking-tight ${

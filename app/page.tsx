@@ -118,11 +118,11 @@ export default function HomePage() {
       {/* MOBILE — service tile grid (4 across) */}
       <section className="md:hidden px-5 -mt-5">
         <div className="bg-surface rounded-2xl border hairline p-3 grid grid-cols-4 gap-2 shadow-[0_4px_24px_-12px_rgba(0,0,0,0.15)]">
-          {SERVICE_TILES.map(({ href, label, Icon, bg, text }) => (
+          {SERVICE_TILES.map(({ href, label, Icon, bg, text }, i) => (
             <Link
               key={label}
               href={href}
-              className="flex flex-col items-center justify-center gap-1.5 py-2 rounded-xl active:bg-surface-soft"
+              className={`tap float-in float-in-delay-${i + 1} flex flex-col items-center justify-center gap-1.5 py-2 rounded-xl active:bg-surface-soft`}
             >
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${bg} ${text ?? "text-foreground"} ${bg === "bg-white/15" ? "bg-accent/10 text-accent" : ""}`}>
                 <Icon size={22} strokeWidth={2.2} />
@@ -137,7 +137,7 @@ export default function HomePage() {
       <section className="md:hidden px-5 mt-5">
         <Link
           href="/browse?driver=self-drive"
-          className="block relative overflow-hidden rounded-2xl bg-accent text-accent-fg p-5 active:opacity-95"
+          className="tap float-in block relative overflow-hidden rounded-2xl bg-accent text-accent-fg p-5"
         >
           <div className="text-[20px] font-bold tracking-tight leading-tight mb-1">
             Cheaper. Faster.<br />Drive yourself.
@@ -156,8 +156,11 @@ export default function HomePage() {
           <Link href="/browse" className="text-[12px] text-foreground/60">See all</Link>
         </div>
         <div className="flex gap-3 overflow-x-auto no-scrollbar px-5 pb-2">
-          {trending.map((c) => (
-            <div key={c.id} className="w-[68vw] max-w-[280px] flex-shrink-0">
+          {trending.map((c, i) => (
+            <div
+              key={c.id}
+              className={`tap w-[68vw] max-w-[280px] flex-shrink-0 float-in float-in-delay-${Math.min(i + 1, 4)}`}
+            >
               <CarCard car={c} />
             </div>
           ))}
