@@ -16,10 +16,15 @@ In the Vercel project settings → **Environment Variables**, add:
 
 | Name                 | Value                                                                                  |
 | -------------------- | -------------------------------------------------------------------------------------- |
-| `AIRTABLE_API_KEY`   | Personal Access Token from https://airtable.com/create/tokens (scope: `data.records:read` on the Sakay Prototype base). |
+| `AIRTABLE_API_KEY`   | Personal Access Token from https://airtable.com/create/tokens. Scopes: `data.records:read` AND `data.records:write` on the Sakay Prototype base. Read is for the catalog sync; write is so new bookings show up in Airtable. |
 | `AIRTABLE_BASE_ID`   | `appxxnxrfm14M9ZmV`                                                                    |
 
 Supabase vars are optional — leave blank to run in mock-auth mode.
+
+The Airtable base has four tables: **Cars**, **Hosts**, **Reviews**, **Bookings**.
+The build pulls Cars/Hosts/Reviews into `lib/data/*.generated.ts`. When a
+user books a car, the app POSTs to `/api/bookings`, which mirrors the
+booking into the Bookings table for the host's view.
 
 ## 4. Deploy
 Click **Deploy**. Vercel will:

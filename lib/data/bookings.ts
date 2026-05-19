@@ -86,6 +86,27 @@ export async function createBooking(input: CreateBookingInput): Promise<LocalBoo
     // never fails a booking; SETUP.md flags this for hardening.
   }
 
+  // Mirror to Airtable Bookings table (best-effort; no-ops if AIRTABLE_API_KEY
+  // isn't set on the server). Gives hosts visibility of incoming bookings.
+  try {
+    await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: booking.id,
+        carId: input.vehicleId,
+        title: input.vehicleLabel,
+        subtitle: `${input.vehicleLocation} · ${input.driverOption === "with-driver" ? "with driver" : "self-drive"}`,
+        date: `${input.startDate} → ${input.endDate}`,
+        amount: Math.round(input.totalCents / 100),
+        photo: input.vehiclePhoto,
+        renter: input.renterId,
+      }),
+    });
+  } catch {
+    // Network failure shouldn't fail the booking — already persisted locally.
+  }
+
   const all = readLocal();
   all.unshift(booking);
   writeLocal(all);
