@@ -86,7 +86,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-xl bg-black text-white font-semibold text-[15px] py-3 tracking-tight active:opacity-90 disabled:opacity-50"
+            className="w-full rounded-xl bg-accent text-accent-fg font-semibold text-[15px] py-3 tracking-tight active:opacity-90 disabled:opacity-50"
           >
             {submitting ? "Sending…" : supabaseEnabled ? "Send magic link" : "Continue"}
           </button>

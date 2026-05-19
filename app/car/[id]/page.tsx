@@ -186,7 +186,7 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
                 Join Sakay Black to book
               </Link>
             ) : (
-              <button onClick={book} className="w-full bg-black text-white rounded-full py-3.5 font-semibold text-[14px]">
+              <button onClick={book} className="w-full bg-accent text-accent-fg rounded-full py-3.5 font-semibold text-[14px]">
                 Reserve
               </button>
             )}
@@ -201,18 +201,18 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
       </div>
 
       {/* Mobile sticky CTA — sits above the bottom nav + iOS safe area */}
-      <div className="md:hidden fixed inset-x-0 z-20 border-t hairline bg-white px-5 py-3 flex items-center justify-between" style={{ bottom: "calc(env(safe-area-inset-bottom) + 56px)" }}>
+      <div className="md:hidden fixed inset-x-0 z-20 border-t hairline bg-background px-5 py-3 flex items-center justify-between" style={{ bottom: "calc(env(safe-area-inset-bottom) + 56px)" }}>
         <div>
           <div className="text-[18px] font-bold tracking-tight">
             ₱{car.pricePerDay.toLocaleString()}
-            <span className="text-[13px] text-gray-500 font-normal"> / day</span>
+            <span className="text-[13px] text-foreground/50 font-normal"> / day</span>
           </div>
-          <span className="text-[11px] text-gray-500">May 17 – May 20</span>
+          <span className="text-[11px] text-foreground/50">May 17 – May 20</span>
         </div>
         {car.blackOnly ? (
           <Link href="/black" className="bg-black text-white rounded-full px-6 py-3 font-semibold text-[14px]">Join Sakay Black</Link>
         ) : (
-          <button onClick={book} className="bg-black text-white rounded-full px-6 py-3 font-semibold text-[14px]">Reserve</button>
+          <button onClick={book} className="bg-accent text-accent-fg rounded-full px-6 py-3 font-semibold text-[14px]">Reserve</button>
         )}
       </div>
       <div className="md:hidden h-20" />

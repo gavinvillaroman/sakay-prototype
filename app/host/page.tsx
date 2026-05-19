@@ -9,7 +9,7 @@ export default function HostDashboard() {
   const max = Math.max(...hostStats.earningsTrend);
 
   return (
-    <div className="max-w-4xl mx-auto bg-white pb-12">
+    <div className="max-w-4xl mx-auto bg-background pb-12">
       <div className="md:hidden"><AppHeader title="Host dashboard" /></div>
       <div className="md:pt-8">
         {/* Earnings */}
@@ -32,7 +32,7 @@ export default function HostDashboard() {
             {hostStats.earningsTrend.map((v, i) => (
               <div
                 key={i}
-                className={`flex-1 rounded-t ${i === hostStats.earningsTrend.length - 1 ? "bg-black" : "bg-gray-200"}`}
+                className={`flex-1 rounded-t ${i === hostStats.earningsTrend.length - 1 ? "bg-accent" : "bg-foreground/15"}`}
                 style={{ height: `${(v / max) * 100}%` }}
               />
             ))}
@@ -60,7 +60,7 @@ export default function HostDashboard() {
 
         {/* Quick actions */}
         <div className="px-5 grid grid-cols-3 gap-2 mb-6">
-          <button className="rounded-2xl bg-black text-white py-3 flex flex-col items-center gap-1">
+          <button className="rounded-2xl bg-accent text-accent-fg py-3 flex flex-col items-center gap-1">
             <Plus size={16} />
             <span className="text-[11px] font-semibold">New listing</span>
           </button>

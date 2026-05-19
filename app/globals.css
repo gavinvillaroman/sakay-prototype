@@ -3,9 +3,34 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #000000;
+  --foreground: #111111;
   --hairline: #ececec;
   --muted: #6e6e73;
+
+  /* Grab Green — the default Sakay accent. */
+  --accent: #00b14f;
+  --accent-hover: #009a45;
+  --accent-fg: #ffffff;
+
+  --surface: #ffffff;
+  --surface-soft: #f5f5f7;
+  --surface-fg: #111111;
+}
+
+/* Sakay Black membership flips the entire app to a dark, premium palette. */
+.theme-black {
+  --background: #000000;
+  --foreground: #ffffff;
+  --hairline: rgba(255, 255, 255, 0.1);
+  --muted: rgba(255, 255, 255, 0.6);
+
+  --accent: #ffffff;
+  --accent-hover: #e6e6e6;
+  --accent-fg: #000000;
+
+  --surface: #0a0a0a;
+  --surface-soft: rgba(255, 255, 255, 0.06);
+  --surface-fg: #ffffff;
 }
 
 @theme inline {
@@ -13,6 +38,12 @@
   --color-foreground: var(--foreground);
   --color-hairline: var(--hairline);
   --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-surface-fg: var(--surface-fg);
 }
 
 html, body {
@@ -23,7 +54,7 @@ html, body {
   letter-spacing: -0.01em;
 }
 
-.hairline { border-color: #ececec; }
+.hairline { border-color: var(--hairline); }
 .tracking-tightest { letter-spacing: -0.04em; }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -37,6 +68,9 @@ html, body {
 
 .leaflet-container { z-index: 0; font-family: inherit; background: #f3f3f3; }
 .leaflet-control-attribution { font-size: 9px !important; }
+
+.theme-black .leaflet-container { background: #111111; }
+.theme-black .leaflet-tile { filter: invert(0.92) hue-rotate(180deg) brightness(0.95); }
 
 .with-mobile-nav { padding-bottom: 84px; }
 @media (min-width: 768px) {

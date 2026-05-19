@@ -22,7 +22,7 @@ export default function HostProfile({ params }: { params: Promise<{ slug: string
   const photo = cars[0]?.hostPhoto ?? "https://i.pravatar.cc/150";
 
   return (
-    <div className="max-w-5xl mx-auto bg-white pb-12">
+    <div className="max-w-5xl mx-auto bg-background pb-12">
       <div className="md:hidden"><AppHeader title="Host" /></div>
       <div className="md:pt-8">
         {/* Hero */}
@@ -38,7 +38,7 @@ export default function HostProfile({ params }: { params: Promise<{ slug: string
               style={{ width: 88, height: 88 }}
             />
             {isSuperhost && (
-              <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-black text-white flex items-center justify-center border-2 border-white">
+              <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-accent text-accent-fg flex items-center justify-center border-2 border-background">
                 <BadgeCheck size={15} strokeWidth={2.5} />
               </span>
             )}

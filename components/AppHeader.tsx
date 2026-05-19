@@ -11,7 +11,7 @@ export default function AppHeader({
 }) {
   const router = useRouter();
   return (
-    <div className="flex items-center justify-between px-5 h-12 bg-white relative z-20">
+    <div className="flex items-center justify-between px-5 h-12 bg-background relative z-20">
       <button onClick={() => router.back()} className="w-9 h-9 -ml-2 flex items-center justify-center">
         <ArrowLeft size={22} strokeWidth={2} />
       </button>

@@ -17,7 +17,7 @@ export default function BottomNav() {
   const tabs = allTabs.filter((t) => t.id !== "experiences" || flags.experiences);
 
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t hairline pb-[env(safe-area-inset-bottom)]">
+    <div className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-background border-t hairline pb-[env(safe-area-inset-bottom)]">
       <div className="flex justify-around items-stretch pt-1.5">
         {tabs.map((t) => {
           const active = t.match(pathname);
@@ -31,11 +31,11 @@ export default function BottomNav() {
               <Icon
                 size={22}
                 strokeWidth={active ? 2.4 : 1.6}
-                className={active ? "text-black" : "text-gray-400"}
+                className={active ? "text-accent" : "text-foreground/40"}
               />
               <span
                 className={`text-[10px] font-medium tracking-tight ${
-                  active ? "text-black" : "text-gray-400"
+                  active ? "text-accent" : "text-foreground/40"
                 }`}
               >
                 {t.label}

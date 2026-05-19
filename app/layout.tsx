@@ -5,6 +5,7 @@ import BottomNav from "@/components/BottomNav";
 import Providers from "@/components/Providers";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import InstallPrompt from "@/components/InstallPrompt";
+import ThemeApplier from "@/components/ThemeApplier";
 
 export const metadata: Metadata = {
   title: "Sakay — Car-sharing for the Philippines",
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#00b14f",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -32,8 +33,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-white text-black min-h-screen flex flex-col">
+      <body className="bg-background text-foreground min-h-screen flex flex-col">
         <Providers>
+          <ThemeApplier />
           <TopNav />
           <main className="flex-1 with-mobile-nav">{children}</main>
           <BottomNav />
