@@ -73,6 +73,13 @@ export const categories: { id: Category; label: string; icon: LucideIcon }[] = [
 // Unsplash source URLs (real photos, no API key needed)
 const u = (q: string, w = 800) => `https://images.unsplash.com/${q}?auto=format&fit=crop&w=${w}&q=80`;
 
+// Every listing is operated by SHOTCORNER CORP. — a single verified fleet operator.
+const SHOTCORNER = {
+  hostName: "SHOTCORNER CORP.",
+  hostPhoto: "https://i.pravatar.cc/150?img=33",
+  hostSuperhost: true,
+} as const;
+
 export const cars: Car[] = [
   {
     id: "c1",
@@ -84,9 +91,7 @@ export const cars: Car[] = [
     rating: 4.93,
     trips: 92,
     location: "Quezon City",
-    hostName: "Shotcorner Corporation",
-    hostPhoto: "https://i.pravatar.cc/150?img=33",
-    hostSuperhost: true,
+    ...SHOTCORNER,
     photo: "/cars/toyota-hiace.jpg",
     features: ["12-seater", "Diesel auto", "USB ports"],
     instantBook: true,
@@ -102,9 +107,7 @@ export const cars: Car[] = [
     rating: 4.88,
     trips: 71,
     location: "Pasig",
-    hostName: "Shotcorner Corporation",
-    hostPhoto: "https://i.pravatar.cc/150?img=15",
-    hostSuperhost: true,
+    ...SHOTCORNER,
     photo: "/cars/nissan-nv350.jpg",
     features: ["15-seater", "Reclining seats", "Captain's chairs"],
     instantBook: true,
@@ -120,9 +123,7 @@ export const cars: Car[] = [
     rating: 4.91,
     trips: 58,
     location: "Makati",
-    hostName: "Tin V.",
-    hostPhoto: "https://i.pravatar.cc/150?img=44",
-    hostSuperhost: true,
+    ...SHOTCORNER,
     photo: "/cars/nissan-almera.avif",
     features: ["Compact sedan", "Fuel-efficient", "Push start"],
     instantBook: true,
@@ -138,9 +139,7 @@ export const cars: Car[] = [
     rating: 4.94,
     trips: 124,
     location: "Cabanatuan, NE",
-    hostName: "Lia Santos",
-    hostPhoto: "https://i.pravatar.cc/150?img=47",
-    hostSuperhost: true,
+    ...SHOTCORNER,
     photo: "/cars/honda-brv.avif",
     features: ["7-seater", "Fuel-efficient", "Family-friendly"],
     instantBook: true,
@@ -156,9 +155,7 @@ export const cars: Car[] = [
     rating: 4.96,
     trips: 87,
     location: "BGC, Taguig",
-    hostName: "Marco D.",
-    hostPhoto: "https://i.pravatar.cc/150?img=12",
-    hostSuperhost: true,
+    ...SHOTCORNER,
     photo: "/cars/mitsubishi-montero.webp",
     features: ["7-seater 4x4", "Diesel turbo", "Paddle shifters"],
     instantBook: false,
@@ -174,9 +171,7 @@ export const cars: Car[] = [
     rating: 5.0,
     trips: 24,
     location: "General Luna, Siargao",
-    hostName: "Kuya Ron",
-    hostPhoto: "https://i.pravatar.cc/150?img=24",
-    hostSuperhost: true,
+    ...SHOTCORNER,
     photo: "/cars/vespa-jb.jpg",
     features: ["Limited edition", "150cc", "2 helmets incl."],
     instantBook: true,
@@ -239,7 +234,7 @@ export const activity: Activity[] = [
     id: "a2",
     type: "rental",
     title: "Mitsubishi Montero Sport",
-    subtitle: "Hosted by Marco D. · 3 days",
+    subtitle: "SHOTCORNER CORP. · 3 days",
     date: "May 4 – May 7",
     status: "completed",
     amount: 13500,
@@ -249,7 +244,7 @@ export const activity: Activity[] = [
     id: "a3",
     type: "rental",
     title: "Toyota HiAce GL Grandia",
-    subtitle: "Shotcorner Corporation · 1 day",
+    subtitle: "SHOTCORNER CORP. · 1 day",
     date: "Apr 18",
     status: "canceled",
     amount: 0,
@@ -270,22 +265,22 @@ export const reviews: Review[] = [
   { id: "r7", carId: "c2", reviewerName: "Mika S.", reviewerPhoto: "https://i.pravatar.cc/150?img=29", rating: 4, date: "January 2026", text: "Solid van. Interior was clean and recliners actually recline. Took one star for fuel — diesel is on you, fyi." },
 
   // Nissan Almera (c3)
-  { id: "r8", carId: "c3", reviewerName: "Beatrice R.", reviewerPhoto: "https://i.pravatar.cc/150?img=41", rating: 5, date: "April 2026", text: "Perfect city car. Easy to park, sips fuel, and Tin was super accommodating on pickup time." },
+  { id: "r8", carId: "c3", reviewerName: "Beatrice R.", reviewerPhoto: "https://i.pravatar.cc/150?img=41", rating: 5, date: "April 2026", text: "Perfect city car. Easy to park, sips fuel, and the Shotcorner team was super accommodating on pickup time." },
   { id: "r9", carId: "c3", reviewerName: "Marvin O.", reviewerPhoto: "https://i.pravatar.cc/150?img=52", rating: 5, date: "March 2026", text: "Daily driver for a week — felt brand new. No drama." },
   { id: "r10", carId: "c3", reviewerName: "Ysa P.", reviewerPhoto: "https://i.pravatar.cc/150?img=38", rating: 5, date: "February 2026", text: "First time using Sakay and Almera was a great intro. Push start is a nice touch for the price." },
 
   // Honda BR-V (c4)
-  { id: "r11", carId: "c4", reviewerName: "Don N.", reviewerPhoto: "https://i.pravatar.cc/150?img=60", rating: 5, date: "April 2026", text: "7-seater that actually fits adults in row 3. Took it to Subic, ~22 km/L on the trip. Lia is a great host." },
+  { id: "r11", carId: "c4", reviewerName: "Don N.", reviewerPhoto: "https://i.pravatar.cc/150?img=60", rating: 5, date: "April 2026", text: "7-seater that actually fits adults in row 3. Took it to Subic, ~22 km/L on the trip. Shotcorner is a great host." },
   { id: "r12", carId: "c4", reviewerName: "Sheila K.", reviewerPhoto: "https://i.pravatar.cc/150?img=49", rating: 5, date: "March 2026", text: "Family of 6, perfect size. Honda Sensing made the long drive way less stressful." },
-  { id: "r13", carId: "c4", reviewerName: "Ryan A.", reviewerPhoto: "https://i.pravatar.cc/150?img=14", rating: 5, date: "February 2026", text: "Pickup in Cabanatuan was a breeze. Lia even threw in a baby seat I asked for last minute." },
+  { id: "r13", carId: "c4", reviewerName: "Ryan A.", reviewerPhoto: "https://i.pravatar.cc/150?img=14", rating: 5, date: "February 2026", text: "Pickup in Cabanatuan was a breeze. Shotcorner even threw in a baby seat I asked for last minute." },
 
   // Mitsubishi Montero Sport (c5)
-  { id: "r14", carId: "c5", reviewerName: "Chris F.", reviewerPhoto: "https://i.pravatar.cc/150?img=58", rating: 5, date: "April 2026", text: "Diesel torque is unreal. Took it to Baguio without breaking a sweat. Marco knows his car well." },
+  { id: "r14", carId: "c5", reviewerName: "Chris F.", reviewerPhoto: "https://i.pravatar.cc/150?img=58", rating: 5, date: "April 2026", text: "Diesel torque is unreal. Took it to Baguio without breaking a sweat. Shotcorner knows their fleet well." },
   { id: "r15", carId: "c5", reviewerName: "Trisha L.", reviewerPhoto: "https://i.pravatar.cc/150?img=22", rating: 5, date: "March 2026", text: "Spacious, powerful, immaculate interior. Paddle shifters were a fun bonus on mountain roads." },
-  { id: "r16", carId: "c5", reviewerName: "Bryan H.", reviewerPhoto: "https://i.pravatar.cc/150?img=68", rating: 5, date: "January 2026", text: "Used for a province wedding. Held our luggage + 6 adults comfortably. Marco is responsive AF." },
+  { id: "r16", carId: "c5", reviewerName: "Bryan H.", reviewerPhoto: "https://i.pravatar.cc/150?img=68", rating: 5, date: "January 2026", text: "Used for a province wedding. Held our luggage + 6 adults comfortably. Shotcorner is responsive AF." },
 
   // Vespa Justin Bieber (c7)
-  { id: "r17", carId: "c7", reviewerName: "Sam V.", reviewerPhoto: "https://i.pravatar.cc/150?img=42", rating: 5, date: "April 2026", text: "Insanely fun to ride around General Luna on this. Felt like a vacation movie. Kuya Ron is a legend." },
+  { id: "r17", carId: "c7", reviewerName: "Sam V.", reviewerPhoto: "https://i.pravatar.cc/150?img=42", rating: 5, date: "April 2026", text: "Insanely fun to ride around General Luna on this. Felt like a vacation movie. Shotcorner's Siargao crew is a legend." },
   { id: "r18", carId: "c7", reviewerName: "Hannah W.", reviewerPhoto: "https://i.pravatar.cc/150?img=46", rating: 5, date: "March 2026", text: "Vespa is in mint condition. Bieber stickers + Siargao = the most photogenic trip of my life." },
   { id: "r19", carId: "c7", reviewerName: "Jake R.", reviewerPhoto: "https://i.pravatar.cc/150?img=64", rating: 5, date: "March 2026", text: "Smooth, easy to ride even if you've only been on automatics. Bring sunblock — open ride." },
 ];

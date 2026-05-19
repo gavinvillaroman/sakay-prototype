@@ -8,7 +8,7 @@ import { hostSlug } from "@/lib/host";
 import Reviews from "@/components/Reviews";
 import { useApp } from "@/lib/store";
 import { useReviewStore } from "@/lib/reviewStore";
-import { Star, Zap, ShieldCheck, Car as CarIcon, Heart, Share, ArrowLeft } from "lucide-react";
+import { Star, Zap, ShieldCheck, Car as CarIcon, Heart, Share, ArrowLeft, BadgeCheck } from "lucide-react";
 
 export default function CarDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -106,15 +106,18 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
           <div className="h-px bg-gray-100 my-5 md:my-7" />
 
           {/* Host */}
-          <Link href={`/h/${hostSlug(car.hostName)}`} className="flex items-center gap-3 py-2 -mx-2 px-2 rounded-xl hover:bg-gray-50">
+          <Link href={`/h/${hostSlug(car.hostName)}`} className="flex items-center gap-3 py-2 -mx-2 px-2 rounded-xl hover:bg-surface-soft">
             <Image src={car.hostPhoto} alt={car.hostName} width={48} height={48} unoptimized className="w-12 h-12 rounded-full" />
             <div className="flex-1 min-w-0">
-              <div className="text-[15px] md:text-[16px] font-semibold">Hosted by {car.hostName}</div>
-              <div className="text-[12px] md:text-[13px] text-gray-500">
-                {car.hostSuperhost ? "Superhost · 100% response rate" : "Verified host"}
+              <div className="text-[15px] md:text-[16px] font-semibold flex items-center gap-1">
+                Hosted by {car.hostName}
+                {car.hostSuperhost && <BadgeCheck size={15} className="text-accent" />}
+              </div>
+              <div className="text-[12px] md:text-[13px] text-foreground/60">
+                {car.hostSuperhost ? "Verified fleet · 100% response rate" : "Verified host"}
               </div>
             </div>
-            <span className="text-gray-400">›</span>
+            <span className="text-foreground/40">›</span>
           </Link>
 
           <div className="h-px bg-gray-100 my-5 md:my-7" />
