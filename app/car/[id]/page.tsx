@@ -12,7 +12,7 @@ import { useApp } from "@/lib/store";
 import { useReviewStore } from "@/lib/reviewStore";
 import {
   Star, Zap, ShieldCheck, Heart, Share, ArrowLeft, BadgeCheck,
-  Award, KeyRound, Snowflake, CalendarDays, MapPin, Flag, Camera,
+  Award, KeyRound, Snowflake, CalendarDays, MapPin, Flag, Camera, Leaf,
 } from "lucide-react";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -147,27 +147,35 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
             {car.features.slice(0, 3).join(" · ")}
           </div>
 
-          {/* Airbnb-style 3-up stats with vertical dividers */}
-          <div className="grid grid-cols-3 mt-6 border hairline rounded-2xl divide-x hairline">
-            <div className="text-center py-4 px-2">
-              <div className="text-[22px] md:text-[26px] font-bold tracking-tight leading-none">{rating.toFixed(2)}</div>
-              <div className="flex items-center justify-center gap-0.5 mt-2 text-yellow-400">
+          {/* Airbnb-style 3-up stats: no outer border, just vertical dividers */}
+          <div className="grid grid-cols-3 mt-7 divide-x divide-hairline">
+            {/* Rating */}
+            <div className="text-center py-2 px-2">
+              <div className="text-[22px] md:text-[26px] font-bold tracking-tight leading-none">
+                {rating.toFixed(2)}
+              </div>
+              <div className="flex items-center justify-center gap-px mt-2">
                 {[0,1,2,3,4].map((i) => (
-                  <Star key={i} size={9} strokeWidth={0} className="fill-yellow-400" />
+                  <Star key={i} size={11} strokeWidth={0} className="fill-yellow-400 text-yellow-400" />
                 ))}
               </div>
             </div>
-            <div className="text-center py-4 px-2 flex flex-col items-center justify-center">
-              <div className="flex items-center gap-1.5">
-                <Award size={20} className="text-accent" strokeWidth={2} />
-              </div>
-              <div className="text-[11px] md:text-[12px] font-bold tracking-tight mt-1.5 leading-tight">
+
+            {/* Verified fleet — laurel flanking the label */}
+            <div className="py-2 px-2 flex items-center justify-center gap-2">
+              <Leaf size={26} strokeWidth={1.6} className="-rotate-12 -scale-x-100" />
+              <div className="text-[12.5px] md:text-[13.5px] font-bold tracking-tight leading-[1.15] text-center">
                 Verified<br/>fleet
               </div>
+              <Leaf size={26} strokeWidth={1.6} className="rotate-12" />
             </div>
-            <div className="text-center py-4 px-2">
-              <div className="text-[22px] md:text-[26px] font-bold tracking-tight leading-none">{car.trips}</div>
-              <div className="text-[11px] md:text-[12px] text-foreground/60 font-semibold mt-2 underline underline-offset-2">
+
+            {/* Bookings */}
+            <div className="text-center py-2 px-2">
+              <div className="text-[22px] md:text-[26px] font-bold tracking-tight leading-none">
+                {car.trips}
+              </div>
+              <div className="text-[12px] md:text-[13px] text-foreground/70 font-semibold mt-2">
                 {car.trips === 1 ? "Booking" : "Bookings"}
               </div>
             </div>
