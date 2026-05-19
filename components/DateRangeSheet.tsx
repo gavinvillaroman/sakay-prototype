@@ -10,7 +10,7 @@ type Props = {
   monthsToShow?: number;
   onClose: () => void;
   onSave: (start: string, end: string) => void;
-  priceLabel?: string; // e.g. "₱5,500 / day"
+  priceLabel?: string;
 };
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
@@ -50,7 +50,7 @@ type DayCell = { iso?: string; day: number | null };
 
 function monthGrid(year: number, month: number): DayCell[] {
   const first = new Date(year, month, 1);
-  const leading = first.getDay(); // 0..6 (Sun..Sat)
+  const leading = first.getDay();
   const daysIn = new Date(year, month + 1, 0).getDate();
   const cells: DayCell[] = [];
   for (let i = 0; i < leading; i++) cells.push({ day: null });
@@ -73,10 +73,24 @@ export default function DateRangeSheet({
 }: Props) {
   const [tmpStart, setTmpStart] = useState(startDate);
   const [tmpEnd, setTmpEnd] = useState(endDate);
-  // Track whether the next tap should set start (fresh selection) or end.
   const [pickingEnd, setPickingEnd] = useState(true);
 
-  // Reset internal state when opening
+  // Mount/unmount with animation: keep DOM around for exit transition
+  const [mounted, setMounted] = useState(open);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      // Next frame so the initial translateY(100%) paints before transitioning
+      requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
+    } else if (mounted) {
+      setShown(false);
+      const t = setTimeout(() => setMounted(false), 380);
+      return () => clearTimeout(t);
+    }
+  }, [open, mounted]);
+
   useEffect(() => {
     if (open) {
       setTmpStart(startDate);
@@ -85,17 +99,16 @@ export default function DateRangeSheet({
     }
   }, [open, startDate, endDate]);
 
-  // Lock body scroll while open
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (open) {
+    if (mounted) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => {
         document.body.style.overflow = prev;
       };
     }
-  }, [open]);
+  }, [mounted]);
 
   const today = useMemo(() => toISO(new Date()), []);
   const effectiveMin = minDate ?? today;
@@ -116,17 +129,13 @@ export default function DateRangeSheet({
 
   const onTap = (iso: string) => {
     if (iso < effectiveMin) return;
-
-    // Fresh selection (no start) — set start
     if (!tmpStart || !pickingEnd) {
       setTmpStart(iso);
       setTmpEnd("");
       setPickingEnd(true);
       return;
     }
-    // Picking end now
     if (iso <= tmpStart) {
-      // Tapping earlier or same → restart range from that day
       setTmpStart(iso);
       setTmpEnd("");
       setPickingEnd(true);
@@ -147,7 +156,6 @@ export default function DateRangeSheet({
       onSave(tmpStart, tmpEnd);
       onClose();
     } else if (tmpStart && !tmpEnd) {
-      // Default to single-day if user only tapped one date
       onSave(tmpStart, addDays(tmpStart, 1));
       onClose();
     }
@@ -161,116 +169,136 @@ export default function DateRangeSheet({
       : "Select dates";
   const subtitle = tmpStart
     ? tmpEnd
-      ? `${fmtShort(tmpStart)} – ${fmtShort(tmpEnd)}`
-      : `${fmtShort(tmpStart)} – ?`
+      ? `${fmtShort(tmpStart)} — ${fmtShort(tmpEnd)}`
+      : `${fmtShort(tmpStart)} — ?`
     : "Choose your pickup and return";
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 bg-background flex flex-col animate-in fade-in"
-      role="dialog"
-      aria-modal="true"
-    >
-      {/* Header */}
+    <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
+      {/* Backdrop */}
       <div
-        className="flex-shrink-0 px-5 pb-3 border-b hairline"
-        style={{ paddingTop: "calc(env(safe-area-inset-top) + 12px)" }}
+        onClick={onClose}
+        className="absolute inset-0 bg-black transition-opacity duration-300 ease-out"
+        style={{ opacity: shown ? 0.45 : 0 }}
+      />
+
+      {/* Sheet */}
+      <div
+        className="absolute inset-x-0 bottom-0 bg-background rounded-t-3xl flex flex-col shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.25)]"
+        style={{
+          height: "92dvh",
+          maxHeight: "92dvh",
+          transform: shown ? "translateY(0)" : "translateY(100%)",
+          transition: "transform 380ms cubic-bezier(0.32, 0.72, 0, 1)",
+          willChange: "transform",
+        }}
       >
-        <div className="flex items-center justify-between">
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="tap w-10 h-10 -ml-2 flex items-center justify-center"
-          >
-            <X size={22} />
-          </button>
-          <button
-            onClick={clear}
-            className="tap text-[14px] font-semibold underline underline-offset-4"
-          >
-            Clear dates
-          </button>
+        {/* Drag handle */}
+        <div className="flex-shrink-0 flex justify-center pt-2.5 pb-1">
+          <div className="w-9 h-1 rounded-full bg-foreground/15" />
         </div>
-        <div className="mt-4">
-          <div className="text-[24px] font-bold tracking-tightest leading-tight">{title}</div>
-          <div className="text-[14px] text-foreground/60 mt-0.5">{subtitle}</div>
-        </div>
-      </div>
 
-      {/* Day-of-week header */}
-      <div className="flex-shrink-0 px-5 pt-3 pb-2 grid grid-cols-7 text-[11px] text-foreground/40 font-semibold tracking-widest text-center">
-        {DAY_LABELS.map((d, i) => <div key={i}>{d}</div>)}
-      </div>
-      <div className="flex-shrink-0 border-b hairline" />
-
-      {/* Scrollable months */}
-      <div className="flex-1 overflow-y-auto no-scrollbar px-5 pb-32">
-        {months.map(({ year, month, cells }) => (
-          <div key={`${year}-${month}`} className="pt-6">
-            <h3 className="text-[18px] font-bold tracking-tight mb-3">{MONTH_LABELS[month]} {year}</h3>
-            <div className="grid grid-cols-7 gap-y-1">
-              {cells.map((c, i) => {
-                if (!c.iso) return <div key={i} className="h-12" />;
-                const disabled = c.iso < effectiveMin;
-                const isStart = tmpStart && sameDay(c.iso, tmpStart);
-                const isEnd = tmpEnd && sameDay(c.iso, tmpEnd);
-                const inRange = tmpStart && tmpEnd && c.iso > tmpStart && c.iso < tmpEnd;
-                // Range pill rounding: start = rounded-l, end = rounded-r
-                const rangeBg = (isStart || isEnd || inRange) && tmpEnd
-                  ? "bg-surface-soft"
-                  : "";
-                const rangeRound =
-                  isStart && tmpEnd ? "rounded-l-full" :
-                  isEnd ? "rounded-r-full" :
-                  "";
-
-                return (
-                  <div key={i} className={`h-12 flex items-center justify-center ${rangeBg} ${rangeRound}`}>
-                    <button
-                      onClick={() => !disabled && onTap(c.iso!)}
-                      disabled={disabled}
-                      className={`w-11 h-11 rounded-full flex items-center justify-center text-[15px] font-semibold tracking-tight transition
-                        ${disabled
-                          ? "text-foreground/25 line-through"
-                          : isStart || isEnd
-                            ? "bg-foreground text-background"
-                            : "text-foreground active:bg-surface-soft"
-                        }`}
-                    >
-                      {c.day}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+        {/* Header */}
+        <div className="flex-shrink-0 px-5 pb-3">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="tap w-9 h-9 -ml-1.5 rounded-full flex items-center justify-center hover:bg-surface-soft"
+            >
+              <X size={20} />
+            </button>
+            <button
+              onClick={clear}
+              className="tap text-[13.5px] font-semibold underline underline-offset-4"
+            >
+              Clear dates
+            </button>
           </div>
-        ))}
-      </div>
-
-      {/* Sticky bottom bar */}
-      <div
-        className="flex-shrink-0 border-t hairline bg-background px-5 py-3 flex items-center justify-between gap-3"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
-      >
-        <div className="min-w-0">
-          {priceLabel && (
-            <div className="text-[15px] font-bold tracking-tight underline underline-offset-2 truncate">
-              {priceLabel}
-            </div>
-          )}
-          <div className="text-[12px] text-foreground/60 truncate">
-            {nights > 0 ? `For ${nights} ${nights === 1 ? "day" : "days"}` : "Choose your dates"}
+          <div className="mt-3">
+            <div className="text-[24px] font-bold tracking-tightest leading-tight">{title}</div>
+            <div className="text-[13.5px] text-foreground/60 mt-0.5">{subtitle}</div>
           </div>
         </div>
-        <button
-          onClick={save}
-          disabled={!tmpStart}
-          className="tap bg-foreground text-background rounded-full px-8 py-3.5 font-semibold text-[14.5px] disabled:opacity-40 flex-shrink-0"
+
+        {/* Day-of-week header */}
+        <div className="flex-shrink-0 px-5 pb-2 grid grid-cols-7 text-[11px] text-foreground/40 font-semibold tracking-widest text-center">
+          {DAY_LABELS.map((d, i) => <div key={i} className="py-1">{d}</div>)}
+        </div>
+        <div className="flex-shrink-0 mx-5 border-b hairline" />
+
+        {/* Scrollable months */}
+        <div className="flex-1 overflow-y-auto overscroll-contain no-scrollbar px-5 pb-32">
+          {months.map(({ year, month, cells }, mi) => (
+            <div
+              key={`${year}-${month}`}
+              className="pt-6 float-in"
+              style={{ animationDelay: `${Math.min(mi * 40, 160)}ms` }}
+            >
+              <h3 className="text-[17px] font-bold tracking-tight mb-2">{MONTH_LABELS[month]} {year}</h3>
+              <div className="grid grid-cols-7">
+                {cells.map((c, i) => {
+                  if (!c.iso) return <div key={i} className="h-12" />;
+                  const disabled = c.iso < effectiveMin;
+                  const isStart = tmpStart && sameDay(c.iso, tmpStart);
+                  const isEnd = tmpEnd && sameDay(c.iso, tmpEnd);
+                  const inRange = tmpStart && tmpEnd && c.iso > tmpStart && c.iso < tmpEnd;
+
+                  // Range pill: fills the cell horizontally; rounded only at endpoints
+                  const rangeBg = (isStart || isEnd || inRange) && tmpEnd ? "bg-surface-soft" : "";
+                  const rangeRound =
+                    isStart && tmpEnd ? "rounded-l-full" :
+                    isEnd ? "rounded-r-full" :
+                    "";
+
+                  return (
+                    <div key={i} className={`h-12 flex items-center justify-center ${rangeBg} ${rangeRound}`}>
+                      <button
+                        onClick={() => !disabled && onTap(c.iso!)}
+                        disabled={disabled}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center text-[14.5px] font-semibold tracking-tight transition-transform duration-100
+                          ${disabled
+                            ? "text-foreground/25 line-through"
+                            : isStart || isEnd
+                              ? "bg-foreground text-background active:scale-95"
+                              : "text-foreground active:bg-foreground/5 active:scale-95"
+                          }`}
+                      >
+                        {c.day}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Sticky bottom bar */}
+        <div
+          className="flex-shrink-0 border-t hairline bg-background px-5 py-3 flex items-center justify-between gap-3"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
         >
-          Save
-        </button>
+          <div className="min-w-0">
+            {priceLabel && (
+              <div className="text-[14.5px] font-bold tracking-tight underline underline-offset-2 truncate">
+                {priceLabel}
+              </div>
+            )}
+            <div className="text-[12px] text-foreground/60 truncate">
+              {nights > 0 ? `For ${nights} ${nights === 1 ? "day" : "days"}` : "Choose your dates"}
+            </div>
+          </div>
+          <button
+            onClick={save}
+            disabled={!tmpStart}
+            className="tap bg-accent text-accent-fg rounded-full px-8 py-3.5 font-bold text-[14.5px] disabled:opacity-40 flex-shrink-0"
+          >
+            Save
+          </button>
+        </div>
       </div>
     </div>
   );
