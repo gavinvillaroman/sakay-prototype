@@ -2,17 +2,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, User } from "lucide-react";
+import { flags } from "@/lib/flags";
 
-const tabs = [
-  { href: "/", label: "Home", match: (p: string) => p === "/" },
-  { href: "/browse", label: "Browse", match: (p: string) => p.startsWith("/browse") || p.startsWith("/car") },
-  { href: "/experiences", label: "Experiences", match: (p: string) => p.startsWith("/experiences") || p.startsWith("/experience") },
-  { href: "/activity", label: "Activity", match: (p: string) => p.startsWith("/activity") },
-  { href: "/black", label: "Sakay Black", match: (p: string) => p.startsWith("/black") },
+const allTabs = [
+  { id: "home", href: "/", label: "Home", match: (p: string) => p === "/" },
+  { id: "browse", href: "/browse", label: "Browse", match: (p: string) => p.startsWith("/browse") || p.startsWith("/car") },
+  { id: "experiences", href: "/experiences", label: "Experiences", match: (p: string) => p.startsWith("/experiences") || p.startsWith("/experience") },
+  { id: "activity", href: "/activity", label: "Activity", match: (p: string) => p.startsWith("/activity") },
+  { id: "black", href: "/black", label: "Sakay Black", match: (p: string) => p.startsWith("/black") },
 ];
 
 export default function TopNav() {
   const pathname = usePathname();
+  const tabs = allTabs.filter(
+    (t) =>
+      (t.id !== "experiences" || flags.experiences) &&
+      (t.id !== "black" || flags.black),
+  );
   return (
     <header className="hidden md:block sticky top-0 z-30 bg-white/90 backdrop-blur border-b hairline">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -25,7 +31,7 @@ export default function TopNav() {
             const active = t.match(pathname);
             return (
               <Link
-                key={t.href}
+                key={t.id}
                 href={t.href}
                 className={`px-4 py-2 rounded-full text-[14px] font-medium transition ${
                   active ? "bg-black text-white" : "text-gray-700 hover:bg-gray-100"

@@ -4,7 +4,9 @@ import Image from "next/image";
 import { useApp } from "@/lib/store";
 import AppHeader from "@/components/AppHeader";
 import { Check, ShieldCheck, Sparkles, Car as CarIcon, UserCheck } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createBooking } from "@/lib/data/bookings";
+import { useAuth } from "@/lib/auth/context";
 
 const ADDONS = [
   { id: "driver", label: "Add a chauffeur", price: 2500, icon: UserCheck, sub: "Pro driver, uniformed (Sakay Black)" },
@@ -16,6 +18,8 @@ const ADDONS = [
 export default function Checkout() {
   const router = useRouter();
   const { cart, toggleAddon, clearCart } = useApp();
+  const { user } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!cart) router.replace("/");
@@ -30,9 +34,28 @@ export default function Checkout() {
   const serviceFee = Math.round(base * 0.08);
   const total = base + addonTotal + serviceFee;
 
-  const confirm = () => {
-    clearCart();
-    router.push("/booking/confirmed");
+  const confirm = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      if (cart.car) {
+        await createBooking({
+          vehicleId: cart.car.id,
+          vehicleLabel: `${cart.car.make} ${cart.car.model}`,
+          vehiclePhoto: cart.car.photo,
+          vehicleLocation: cart.car.location,
+          startDate: "2026-05-17",
+          endDate: "2026-05-20",
+          driverOption: cart.addons.includes("driver") ? "with-driver" : "self-drive",
+          totalCents: total * 100,
+          renterId: user && "id" in user ? user.id : undefined,
+        });
+      }
+      clearCart();
+      router.push("/booking/confirmed");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -120,9 +143,10 @@ export default function Checkout() {
       <div className="flex-shrink-0 border-t hairline bg-white px-5 py-3">
         <button
           onClick={confirm}
-          className="w-full bg-black text-white rounded-full py-3.5 font-semibold text-[14px]"
+          disabled={submitting}
+          className="w-full bg-black text-white rounded-full py-3.5 font-semibold text-[14px] disabled:opacity-60"
         >
-          Pay ₱{total.toLocaleString()}
+          {submitting ? "Confirming…" : `Pay ₱${total.toLocaleString()}`}
         </button>
       </div>
     </div>

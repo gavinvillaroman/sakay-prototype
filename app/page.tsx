@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cars, experiences, categories } from "@/lib/mock";
 import CarCard from "@/components/CarCard";
 import ExperienceCard from "@/components/ExperienceCard";
+import { flags } from "@/lib/flags";
 
 export default function HomePage() {
   const featured = experiences[0];
@@ -110,53 +111,59 @@ export default function HomePage() {
       </section>
 
       {/* Mobile-only ride card */}
-      <section className="md:hidden px-5">
-        <Link href="/ride" className="flex items-center gap-3 p-4 rounded-2xl border hairline active:bg-gray-50">
-          <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center flex-shrink-0">
-            <CarIcon size={18} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[14px] font-semibold tracking-tight">Need a ride now?</div>
-            <div className="text-[11px] text-gray-500">Hail a driver in seconds — pay per trip.</div>
-          </div>
-          <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />
-        </Link>
-      </section>
+      {flags.ride && (
+        <section className="md:hidden px-5">
+          <Link href="/ride" className="flex items-center gap-3 p-4 rounded-2xl border hairline active:bg-gray-50">
+            <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center flex-shrink-0">
+              <CarIcon size={18} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[14px] font-semibold tracking-tight">Need a ride now?</div>
+              <div className="text-[11px] text-gray-500">Hail a driver in seconds — pay per trip.</div>
+            </div>
+            <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />
+          </Link>
+        </section>
+      )}
 
       {/* Sakay Black */}
-      <section className="max-w-7xl mx-auto px-5 md:px-6 mt-5 md:mt-12">
-        <Link href="/black" className="block relative overflow-hidden rounded-2xl md:rounded-3xl bg-black text-white p-5 md:p-10 group">
-          <div className="md:grid md:grid-cols-2 md:gap-10 md:items-center">
-            <div>
-              <div className="text-[10px] md:text-[11px] uppercase tracking-[0.25em] opacity-70 mb-2 md:mb-3">Membership</div>
-              <div className="text-[22px] md:text-[44px] font-semibold tracking-tightest leading-tight mb-1 md:mb-3">
-                Sakay Black
+      {flags.black && (
+        <section className="max-w-7xl mx-auto px-5 md:px-6 mt-5 md:mt-12">
+          <Link href="/black" className="block relative overflow-hidden rounded-2xl md:rounded-3xl bg-black text-white p-5 md:p-10 group">
+            <div className="md:grid md:grid-cols-2 md:gap-10 md:items-center">
+              <div>
+                <div className="text-[10px] md:text-[11px] uppercase tracking-[0.25em] opacity-70 mb-2 md:mb-3">Membership</div>
+                <div className="text-[22px] md:text-[44px] font-semibold tracking-tightest leading-tight mb-1 md:mb-3">
+                  Sakay Black
+                </div>
+                <div className="text-[13px] md:text-[16px] opacity-80 mb-3 md:mb-6 max-w-[420px]">
+                  Chauffeurs, black vans, and concierge. One subscription, one number.
+                </div>
+                <div className="inline-flex items-center gap-1 md:bg-white md:text-black md:rounded-full md:px-5 md:py-2.5 text-[12px] md:text-[14px] font-semibold border-b border-white/40 md:border-0 pb-0.5 md:pb-0">
+                  Explore membership <ChevronRight size={14} />
+                </div>
               </div>
-              <div className="text-[13px] md:text-[16px] opacity-80 mb-3 md:mb-6 max-w-[420px]">
-                Chauffeurs, black vans, VIP police escort, and concierge. One subscription, one number.
-              </div>
-              <div className="inline-flex items-center gap-1 md:bg-white md:text-black md:rounded-full md:px-5 md:py-2.5 text-[12px] md:text-[14px] font-semibold border-b border-white/40 md:border-0 pb-0.5 md:pb-0">
-                Explore membership <ChevronRight size={14} />
+              <div className="hidden md:flex justify-end">
+                <Crown size={140} strokeWidth={1} className="opacity-15" />
               </div>
             </div>
-            <div className="hidden md:flex justify-end">
-              <Crown size={140} strokeWidth={1} className="opacity-15" />
-            </div>
-          </div>
-        </Link>
-      </section>
+          </Link>
+        </section>
+      )}
 
       {/* Featured experience */}
-      <section className="max-w-7xl mx-auto px-5 md:px-6 mt-8 md:mt-16">
-        <div className="flex items-end justify-between mb-3 md:mb-5">
-          <div>
-            <h2 className="text-[18px] md:text-[28px] font-semibold tracking-tightest">Featured experience</h2>
-            <p className="hidden md:block text-[14px] text-gray-500 mt-1">Curated joiner tours with transport included.</p>
+      {flags.experiences && featured && (
+        <section className="max-w-7xl mx-auto px-5 md:px-6 mt-8 md:mt-16">
+          <div className="flex items-end justify-between mb-3 md:mb-5">
+            <div>
+              <h2 className="text-[18px] md:text-[28px] font-semibold tracking-tightest">Featured experience</h2>
+              <p className="hidden md:block text-[14px] text-gray-500 mt-1">Curated joiner tours with transport included.</p>
+            </div>
+            <Link href="/experiences" className="text-[12px] md:text-[14px] text-gray-500 hover:text-black">See all</Link>
           </div>
-          <Link href="/experiences" className="text-[12px] md:text-[14px] text-gray-500 hover:text-black">See all</Link>
-        </div>
-        <ExperienceCard exp={featured} featured />
-      </section>
+          <ExperienceCard exp={featured} featured />
+        </section>
+      )}
 
       {/* Motorbikes */}
       <section className="max-w-7xl mx-auto px-5 md:px-6 mt-8 md:mt-16">
@@ -207,9 +214,10 @@ export default function HomePage() {
           <div>
             <div className="font-semibold mb-2">Sakay</div>
             <ul className="space-y-1 text-gray-500">
-              <li><Link href="/experiences">Experiences</Link></li>
-              <li><Link href="/black">Sakay Black</Link></li>
-              <li><Link href="/ride">Hail a ride</Link></li>
+              {flags.experiences && <li><Link href="/experiences">Experiences</Link></li>}
+              {flags.black && <li><Link href="/black">Sakay Black</Link></li>}
+              {flags.ride && <li><Link href="/ride">Hail a ride</Link></li>}
+              <li><Link href="/legal/help">Help</Link></li>
             </ul>
           </div>
           <div>
@@ -223,7 +231,11 @@ export default function HomePage() {
         <div className="border-t hairline">
           <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between text-[12px] text-gray-500">
             <div>© 2026 Sakay. Prototype build.</div>
-            <div className="flex gap-5"><span>Terms</span><span>Privacy</span><span>Help</span></div>
+            <div className="flex gap-5">
+              <Link href="/legal/terms">Terms</Link>
+              <Link href="/legal/privacy">Privacy</Link>
+              <Link href="/legal/help">Help</Link>
+            </div>
           </div>
         </div>
       </footer>

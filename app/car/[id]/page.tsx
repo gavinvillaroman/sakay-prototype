@@ -200,8 +200,8 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
         </aside>
       </div>
 
-      {/* Mobile sticky CTA */}
-      <div className="md:hidden fixed bottom-[68px] inset-x-0 z-20 border-t hairline bg-white px-5 py-3 flex items-center justify-between">
+      {/* Mobile sticky CTA — sits above the bottom nav + iOS safe area */}
+      <div className="md:hidden fixed inset-x-0 z-20 border-t hairline bg-white px-5 py-3 flex items-center justify-between" style={{ bottom: "calc(env(safe-area-inset-bottom) + 56px)" }}>
         <div>
           <div className="text-[18px] font-bold tracking-tight">
             ₱{car.pricePerDay.toLocaleString()}

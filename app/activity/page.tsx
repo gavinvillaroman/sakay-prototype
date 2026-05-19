@@ -1,9 +1,11 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { activity } from "@/lib/mock";
-import { useState } from "react";
+import { activity, type Activity } from "@/lib/mock";
+import { useEffect, useState } from "react";
 import { ChevronRight, Car, Sparkles, Navigation, Star } from "lucide-react";
+import { listMyBookings, type LocalBooking } from "@/lib/data/bookings";
+import { useAuth } from "@/lib/auth/context";
 
 const STATUS = ["Upcoming", "Past", "Canceled"] as const;
 const TYPES = [
@@ -13,11 +15,34 @@ const TYPES = [
   { id: "ride", label: "Rides" },
 ] as const;
 
+const bookingToActivity = (b: LocalBooking): Activity => {
+  const status: Activity["status"] =
+    b.status === "canceled" ? "canceled" : b.status === "completed" ? "completed" : "upcoming";
+  return {
+    id: b.id,
+    type: "rental",
+    title: b.vehicle_label || "Sakay rental",
+    subtitle: `${b.driver_option === "with-driver" ? "With driver" : "Self-drive"} · ${b.vehicle_location || ""}`.trim(),
+    date: `${b.start_date} → ${b.end_date}`,
+    status,
+    amount: Math.round(b.total_cents / 100),
+    photo: b.vehicle_photo || "/cars/toyota-hiace.jpg",
+  };
+};
+
 export default function ActivityPage() {
   const [status, setStatus] = useState<(typeof STATUS)[number]>("Upcoming");
   const [type, setType] = useState<(typeof TYPES)[number]["id"]>("all");
+  const { user } = useAuth();
+  const [myBookings, setMyBookings] = useState<Activity[]>([]);
 
-  const list = activity.filter((a) => {
+  useEffect(() => {
+    const renterId = user && "id" in user ? user.id : undefined;
+    listMyBookings(renterId).then((rows) => setMyBookings(rows.map(bookingToActivity)));
+  }, [user]);
+
+  const combined = [...myBookings, ...activity];
+  const list = combined.filter((a) => {
     const statusMatch =
       status === "Upcoming" ? a.status === "upcoming" || a.status === "active"
       : status === "Past" ? a.status === "completed"
