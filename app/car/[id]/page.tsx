@@ -1,5 +1,5 @@
 "use client";
-import { use, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
@@ -13,7 +13,10 @@ import { useReviewStore } from "@/lib/reviewStore";
 import {
   Star, Zap, ShieldCheck, Heart, Share, ArrowLeft, BadgeCheck,
   Award, KeyRound, Snowflake, CalendarDays, MapPin, Flag, Camera, Leaf, Pencil,
+  Car as CarIcon, Users, Clock, Sparkles, LifeBuoy, Headphones,
+  Cigarette, Fuel, MountainSnow,
 } from "lucide-react";
+import FeaturesSheet, { type FeatureGroup } from "@/components/FeaturesSheet";
 
 const today = () => new Date().toISOString().slice(0, 10);
 const plusDaysISO = (iso: string, n: number) => {
@@ -73,7 +76,25 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
   const minDate = plusDaysISO(today(), 1);
   const [startDate, setStartDate] = useState(minDate);
   const [endDate, setEndDate] = useState(plusDaysISO(minDate, 3));
+  const [startTime, setStartTime] = useState("10:00 AM");
+  const [endTime, setEndTime] = useState("10:00 AM");
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
+  const [stickyShown, setStickyShown] = useState(false);
+  const heroRef = useRef<HTMLDivElement | null>(null);
+
+  // Sticky header fades in when user scrolls past the hero image
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const el = heroRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setStickyShown(!entry.isIntersecting),
+      { rootMargin: "-60px 0px 0px 0px", threshold: 0 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   if (endDate <= startDate) {
     const fixed = plusDaysISO(startDate, 1);
     if (fixed !== endDate) setTimeout(() => setEndDate(fixed), 0);
@@ -90,14 +111,76 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
   const mergedReviews = [...userReviews, ...getCarReviews(car.id)];
   const rating = avgRating(mergedReviews) || car.rating;
   const highlights = HIGHLIGHTS(car.instantBook, car.hostSuperhost).slice(0, 3);
+
+  // Group features for the "Vehicle features" section. Categorize by simple
+  // keyword match; everything that doesn't fit goes under Capacity.
+  const featureGroups: FeatureGroup[] = (() => {
+    const safety: string[] = ["Anti-lock brakes (ABS)", "Airbags", "Backup camera"];
+    const comfort: string[] = ["Air conditioning"];
+    const connectivity: string[] = ["Bluetooth", "USB charger"];
+    const capacity: string[] = [];
+    car.features.forEach((f) => {
+      const lower = f.toLowerCase();
+      if (/usb|bluetooth|aux|carplay|android/i.test(lower)) connectivity.push(f);
+      else if (/4x4|turbo|diesel|paddle|push start/i.test(lower)) safety.push(f);
+      else capacity.push(f);
+    });
+    return [
+      { title: "Capacity", items: capacity },
+      { title: "Safety", items: safety },
+      { title: "Comfort", items: comfort },
+      { title: "Connectivity", items: connectivity },
+    ].filter((g) => g.items.length > 0);
+  })();
+  const totalFeatures = featureGroups.reduce((s, g) => s + g.items.length, 0);
+
+  // Category rating bars — derived from the car's overall rating with small,
+  // realistic variation per category. Stable per car (no random per render).
+  const categoryRatings = [
+    { label: "Cleanliness", val: Math.min(5, rating - 0.05) },
+    { label: "Maintenance", val: Math.min(5, rating + 0.05) },
+    { label: "Communication", val: Math.min(5, rating) },
+    { label: "Value", val: Math.min(5, rating - 0.10) },
+  ];
   const subtotal = car.pricePerDay * days;
   const serviceFee = Math.round(subtotal * 0.08);
   const total = subtotal + serviceFee;
 
   return (
     <div>
+      {/* Sticky white header — fades in on scroll past hero */}
+      <div
+        className="md:hidden fixed inset-x-0 top-0 z-40 bg-background border-b hairline transition-opacity duration-200"
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          opacity: stickyShown ? 1 : 0,
+          pointerEvents: stickyShown ? "auto" : "none",
+        }}
+      >
+        <div className="flex items-center justify-between px-4 h-14">
+          <button
+            onClick={() => router.back()}
+            aria-label="Back"
+            className="tap w-10 h-10 flex items-center justify-center -ml-2"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div className="text-[16px] font-bold tracking-tight truncate px-2">
+            {car.make} {car.model}
+          </div>
+          <div className="flex items-center gap-1">
+            <button aria-label="Share" className="tap w-10 h-10 flex items-center justify-center">
+              <Share size={18} />
+            </button>
+            <button aria-label="Save" className="tap w-10 h-10 flex items-center justify-center -mr-2">
+              <Heart size={18} />
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Hero with floating Airbnb-style chips */}
-      <div className="relative bg-surface-soft">
+      <div ref={heroRef} className="relative bg-surface-soft">
         {/* Floating nav */}
         <div className="absolute top-3 left-0 right-0 z-20 px-4 flex items-center justify-between">
           <button
@@ -194,10 +277,10 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
                 <div className="flex-1 min-w-0">
                   <div className="text-[15.5px] font-bold tracking-tight">Trip dates</div>
                   <div className="text-[13.5px] text-foreground/70 mt-0.5">
-                    {fmtShort(startDate)} at 10:00 AM
+                    {fmtShort(startDate)} at {startTime}
                   </div>
                   <div className="text-[13.5px] text-foreground/70">
-                    {fmtShort(endDate)} at 10:00 AM
+                    {fmtShort(endDate)} at {endTime}
                   </div>
                 </div>
                 <span className="tap w-10 h-10 rounded-lg border hairline flex items-center justify-center flex-shrink-0">
@@ -277,15 +360,85 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
 
           <div className="h-px bg-hairline my-6 md:my-7" />
 
-          {/* What this vehicle offers */}
-          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-4">What this {car.category === "motorcycle" ? "bike" : "car"} offers</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3.5 gap-x-6 md:max-w-xl">
-            {car.features.map((f) => (
-              <div key={f} className="flex items-center gap-3">
-                <ShieldCheck size={18} strokeWidth={1.5} className="text-foreground/70 flex-shrink-0" />
-                <div className="text-[14.5px] md:text-[15px]">{f}</div>
+          {/* Vehicle features — grouped, with See all sheet */}
+          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-4">Vehicle features</h2>
+          <div className="space-y-6">
+            {featureGroups.slice(0, 2).map((g) => (
+              <div key={g.title}>
+                <div className="text-[14px] font-bold tracking-tight mb-2">{g.title}</div>
+                <ul className="divide-y divide-hairline">
+                  {g.items.map((it) => (
+                    <li key={it} className="py-2.5 text-[14.5px]">{it}</li>
+                  ))}
+                </ul>
               </div>
             ))}
+          </div>
+          {totalFeatures > featureGroups.slice(0, 2).reduce((s, g) => s + g.items.length, 0) && (
+            <button
+              onClick={() => setFeaturesSheetOpen(true)}
+              className="tap mt-5 w-full border hairline rounded-2xl py-3 text-[14px] font-bold tracking-tight"
+            >
+              See all {totalFeatures} features
+            </button>
+          )}
+
+          <div className="h-px bg-hairline my-6 md:my-7" />
+
+          {/* Included in the price */}
+          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-4">Included in the price</h2>
+
+          <div className="text-[14px] font-bold tracking-tight mb-3">Convenience</div>
+          <div className="space-y-4 mb-7">
+            <div className="flex items-start gap-4">
+              <CarIcon size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-bold tracking-tight">Skip the rental counter</div>
+                <div className="text-[13.5px] text-foreground/60 mt-0.5">
+                  Use the app for pickup and return instructions.
+                </div>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <Users size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-bold tracking-tight">Add additional drivers for free</div>
+                <div className="text-[13.5px] text-foreground/60 mt-0.5">
+                  Up to 2 extra licensed drivers can be added at no charge.
+                </div>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <Clock size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-bold tracking-tight">30-minute return grace period</div>
+                <div className="text-[13.5px] text-foreground/60 mt-0.5">
+                  No need to extend your trip unless you&apos;re running more than 30 minutes late.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-[14px] font-bold tracking-tight mb-3">Peace of mind</div>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <Sparkles size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[14.5px]">No car wash necessary, but keep the vehicle tidy</div>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <LifeBuoy size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[14.5px]">Free access to 24/7 roadside assistance</div>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <Headphones size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[14.5px]">24/7 customer support</div>
+              </div>
+            </div>
           </div>
 
           <div className="h-px bg-hairline my-6 md:my-7" />
@@ -299,51 +452,82 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
 
           <div className="h-px bg-hairline my-6 md:my-7" />
 
-          {/* Reviews */}
+          {/* Ratings and reviews */}
+          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-3">Ratings and reviews</h2>
+          <div className="flex items-center gap-1.5 mb-5">
+            <span className="text-[22px] md:text-[26px] font-bold tracking-tight leading-none">{rating.toFixed(1)}</span>
+            <Star size={18} strokeWidth={0} className="fill-yellow-400 text-yellow-400" />
+            <span className="text-[14px] text-foreground/60">({mergedReviews.length} {mergedReviews.length === 1 ? "rating" : "ratings"})</span>
+          </div>
+          <div className="space-y-2.5 mb-7 max-w-md">
+            {categoryRatings.map(({ label, val }) => (
+              <div key={label} className="flex items-center gap-3 text-[13.5px]">
+                <div className="w-28 text-foreground/80">{label}</div>
+                <div className="flex-1 h-1.5 rounded-full bg-surface-soft overflow-hidden">
+                  <div
+                    className="h-full bg-accent rounded-full"
+                    style={{ width: `${(val / 5) * 100}%` }}
+                  />
+                </div>
+                <div className="w-8 text-right font-semibold tabular-nums">{val.toFixed(1)}</div>
+              </div>
+            ))}
+          </div>
           <Reviews reviews={mergedReviews} rating={rating} />
 
           <div className="h-px bg-hairline my-6 md:my-7" />
 
-          {/* Things to know */}
-          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-4">Things to know</h2>
-          <div className="grid md:grid-cols-3 gap-5 md:gap-6">
-            <div>
-              <div className="flex items-center gap-2 text-[15px] font-bold tracking-tight">
-                <CalendarDays size={17} /> Cancellation
+          {/* Rules of the road — Turo pattern */}
+          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-4">Rules of the road</h2>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <Cigarette size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-bold tracking-tight">No smoking allowed</div>
+                <div className="text-[13.5px] text-foreground/60 mt-0.5">
+                  Smoking in any Sakay vehicle will result in a ₱5,000 cleaning fee.
+                </div>
               </div>
-              <ul className="mt-2 space-y-1 text-[13.5px] text-foreground/70 leading-relaxed">
-                <li>Free cancellation &gt; 24h before pickup</li>
-                <li>50% refund 12–24h before</li>
-                <li>No refund under 12h</li>
-              </ul>
             </div>
-            <div>
-              <div className="flex items-center gap-2 text-[15px] font-bold tracking-tight">
-                <KeyRound size={17} /> Pickup &amp; return
+            <div className="flex items-start gap-4">
+              <Sparkles size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-bold tracking-tight">Keep the vehicle tidy</div>
+                <div className="text-[13.5px] text-foreground/60 mt-0.5">
+                  Unreasonably dirty vehicles may result in a ₱2,000 cleaning fee.
+                </div>
               </div>
-              <ul className="mt-2 space-y-1 text-[13.5px] text-foreground/70 leading-relaxed">
-                <li>Pickup at 10:00 AM</li>
-                <li>Return at 10:00 AM</li>
-                <li>Bring driver&apos;s license + 1 ID</li>
-              </ul>
             </div>
-            <div>
-              <div className="flex items-center gap-2 text-[15px] font-bold tracking-tight">
-                <ShieldCheck size={17} /> Safety &amp; protection
+            <div className="flex items-start gap-4">
+              <Fuel size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-bold tracking-tight">Refuel the vehicle</div>
+                <div className="text-[13.5px] text-foreground/60 mt-0.5">
+                  Return with the same fuel level. Missing fuel may result in a refueling fee.
+                </div>
               </div>
-              <ul className="mt-2 space-y-1 text-[13.5px] text-foreground/70 leading-relaxed">
-                <li>₱2M Sakay liability coverage</li>
-                <li>24/7 roadside assistance</li>
-                <li>Pet-free, smoke-free</li>
-              </ul>
             </div>
+            <div className="flex items-start gap-4">
+              <MountainSnow size={26} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-bold tracking-tight">No off-roading</div>
+              </div>
+            </div>
+          </div>
+          <div className="text-[12px] text-foreground/50 mt-5 leading-relaxed">
+            Vehicle may have a device that collects driving and location data. Data may be shared with third parties for vehicle recovery or protection purposes.
           </div>
 
           <div className="h-px bg-hairline my-6 md:my-7" />
 
-          <Link href="/legal/help" className="tap inline-flex items-center gap-2 text-[14px] text-foreground/70 underline underline-offset-4">
-            <Flag size={14} /> Report this listing
-          </Link>
+          <div className="flex flex-col items-center gap-3">
+            <Link href="/legal/help" className="tap text-[14px] font-semibold text-accent underline underline-offset-4">
+              Report listing
+            </Link>
+            <Link href="/legal/terms" className="tap text-[14px] font-semibold text-accent underline underline-offset-4">
+              Cancellation policy
+            </Link>
+          </div>
         </div>
 
         {/* RIGHT — desktop sticky booking card */}
@@ -431,10 +615,24 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
         open={sheetOpen}
         startDate={startDate}
         endDate={endDate}
+        startTime={startTime}
+        endTime={endTime}
         minDate={minDate}
         priceLabel={`₱${car.pricePerDay.toLocaleString()} / day`}
         onClose={() => setSheetOpen(false)}
-        onSave={(s, e) => { setStartDate(s); setEndDate(e); }}
+        onSave={(s, e, st, et) => {
+          setStartDate(s);
+          setEndDate(e);
+          if (st) setStartTime(st);
+          if (et) setEndTime(et);
+        }}
+      />
+
+      <FeaturesSheet
+        open={featuresSheetOpen}
+        onClose={() => setFeaturesSheetOpen(false)}
+        groups={featureGroups}
+        count={totalFeatures}
       />
     </div>
   );

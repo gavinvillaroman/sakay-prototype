@@ -6,12 +6,21 @@ type Props = {
   open: boolean;
   startDate: string; // ISO yyyy-mm-dd
   endDate: string;
+  startTime?: string; // e.g. "10:00 AM"
+  endTime?: string;
   minDate?: string;
   monthsToShow?: number;
   onClose: () => void;
-  onSave: (start: string, end: string) => void;
+  onSave: (start: string, end: string, startTime?: string, endTime?: string) => void;
   priceLabel?: string;
 };
+
+const TIME_OPTIONS = [
+  "8:00 AM","8:30 AM","9:00 AM","9:30 AM","10:00 AM","10:30 AM",
+  "11:00 AM","11:30 AM","12:00 PM","12:30 PM","1:00 PM","1:30 PM",
+  "2:00 PM","2:30 PM","3:00 PM","3:30 PM","4:00 PM","4:30 PM",
+  "5:00 PM","5:30 PM","6:00 PM","7:00 PM","8:00 PM",
+];
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 const MONTH_LABELS = [
@@ -65,6 +74,8 @@ export default function DateRangeSheet({
   open,
   startDate,
   endDate,
+  startTime = "10:00 AM",
+  endTime = "10:00 AM",
   minDate,
   monthsToShow = 6,
   onClose,
@@ -73,6 +84,8 @@ export default function DateRangeSheet({
 }: Props) {
   const [tmpStart, setTmpStart] = useState(startDate);
   const [tmpEnd, setTmpEnd] = useState(endDate);
+  const [tmpStartTime, setTmpStartTime] = useState(startTime);
+  const [tmpEndTime, setTmpEndTime] = useState(endTime);
   const [pickingEnd, setPickingEnd] = useState(true);
 
   // Mount/unmount with animation: keep DOM around for exit transition
@@ -95,9 +108,11 @@ export default function DateRangeSheet({
     if (open) {
       setTmpStart(startDate);
       setTmpEnd(endDate);
+      setTmpStartTime(startTime);
+      setTmpEndTime(endTime);
       setPickingEnd(true);
     }
-  }, [open, startDate, endDate]);
+  }, [open, startDate, endDate, startTime, endTime]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -153,10 +168,10 @@ export default function DateRangeSheet({
 
   const save = () => {
     if (tmpStart && tmpEnd) {
-      onSave(tmpStart, tmpEnd);
+      onSave(tmpStart, tmpEnd, tmpStartTime, tmpEndTime);
       onClose();
     } else if (tmpStart && !tmpEnd) {
-      onSave(tmpStart, addDays(tmpStart, 1));
+      onSave(tmpStart, addDays(tmpStart, 1), tmpStartTime, tmpEndTime);
       onClose();
     }
   };
@@ -169,7 +184,7 @@ export default function DateRangeSheet({
       : "Select dates";
   const subtitle = tmpStart
     ? tmpEnd
-      ? `${fmtShort(tmpStart)} — ${fmtShort(tmpEnd)}`
+      ? `${fmtShort(tmpStart)}, ${tmpStartTime} — ${fmtShort(tmpEnd)}, ${tmpEndTime}`
       : `${fmtShort(tmpStart)} — ?`
     : "Choose your pickup and return";
 
@@ -274,6 +289,48 @@ export default function DateRangeSheet({
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Time selectors — pickup + return */}
+        <div className="flex-shrink-0 border-t hairline bg-background px-5 pt-3 pb-2 space-y-2.5">
+          <div>
+            <div className="text-[11px] uppercase tracking-widest text-foreground/60 font-bold mb-1.5">Pickup</div>
+            <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x-mandatory">
+              {TIME_OPTIONS.map((t) => {
+                const active = t === tmpStartTime;
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setTmpStartTime(t)}
+                    className={`tap flex-shrink-0 rounded-full px-4 py-2 text-[13px] font-semibold tracking-tight border whitespace-nowrap ${
+                      active ? "bg-foreground text-background border-foreground" : "hairline bg-surface text-foreground"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] uppercase tracking-widest text-foreground/60 font-bold mb-1.5">Return</div>
+            <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x-mandatory">
+              {TIME_OPTIONS.map((t) => {
+                const active = t === tmpEndTime;
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setTmpEndTime(t)}
+                    className={`tap flex-shrink-0 rounded-full px-4 py-2 text-[13px] font-semibold tracking-tight border whitespace-nowrap ${
+                      active ? "bg-foreground text-background border-foreground" : "hairline bg-surface text-foreground"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* Sticky bottom bar */}
