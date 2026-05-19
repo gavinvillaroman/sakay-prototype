@@ -1,5 +1,5 @@
 "use client";
-import { use } from "react";
+import { use, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
@@ -11,6 +11,22 @@ import { useApp } from "@/lib/store";
 import { useReviewStore } from "@/lib/reviewStore";
 import { Star, Zap, ShieldCheck, Car as CarIcon, Heart, Share, ArrowLeft, BadgeCheck } from "lucide-react";
 
+const today = () => new Date().toISOString().slice(0, 10);
+const plusDaysISO = (iso: string, n: number) => {
+  const d = new Date(iso + "T00:00:00");
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+const daysBetween = (a: string, b: string) => {
+  const ms = new Date(b + "T00:00:00").getTime() - new Date(a + "T00:00:00").getTime();
+  return Math.max(1, Math.round(ms / 86_400_000));
+};
+const fmtShort = (iso: string) => {
+  const [, m, d] = iso.split("-");
+  const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][Number(m) - 1];
+  return `${month} ${Number(d)}`;
+};
+
 export default function CarDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -18,10 +34,21 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
   const { startBooking } = useApp();
   const allUserReviews = useReviewStore((s) => s.userReviews);
   const userReviews = allUserReviews.filter((r) => r.carId === id);
+
+  const minDate = plusDaysISO(today(), 1);
+  const [startDate, setStartDate] = useState(minDate);
+  const [endDate, setEndDate] = useState(plusDaysISO(minDate, 3));
+  // Auto-correct end date when start jumps past it.
+  if (endDate <= startDate) {
+    const fixed = plusDaysISO(startDate, 1);
+    if (fixed !== endDate) setTimeout(() => setEndDate(fixed), 0);
+  }
+  const days = daysBetween(startDate, endDate);
+
   if (!car) notFound();
 
   const book = () => {
-    startBooking({ car });
+    startBooking({ car, startDate, endDate });
     router.push("/booking/checkout");
   };
 
@@ -75,14 +102,35 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
             <div className="flex items-center gap-1">
               <Star size={13} className="fill-yellow-400 text-yellow-400" />
               <span className="font-medium">{rating.toFixed(2)}</span>
-              <span className="text-gray-500">({car.trips} trips)</span>
             </div>
             {car.instantBook && (
-              <div className="flex items-center gap-1 text-black">
+              <div className="flex items-center gap-1 text-accent">
                 <Zap size={13} strokeWidth={3} />
                 <span className="font-medium">Instant book</span>
               </div>
             )}
+          </div>
+
+          {/* Stat tiles — book count is a trust signal, lead with it */}
+          <div className="grid grid-cols-3 gap-2 mt-4 md:mt-5">
+            <div className="rounded-2xl border hairline p-3 text-center">
+              <div className="text-[18px] md:text-[22px] font-bold tracking-tight leading-none">{car.trips}</div>
+              <div className="text-[10px] md:text-[11px] uppercase tracking-widest text-foreground/60 mt-1 font-semibold">
+                {car.trips === 1 ? "Booking" : "Bookings"}
+              </div>
+            </div>
+            <div className="rounded-2xl border hairline p-3 text-center">
+              <div className="text-[18px] md:text-[22px] font-bold tracking-tight leading-none">{rating.toFixed(1)}</div>
+              <div className="text-[10px] md:text-[11px] uppercase tracking-widest text-foreground/60 mt-1 font-semibold">
+                Rating
+              </div>
+            </div>
+            <div className="rounded-2xl border hairline p-3 text-center">
+              <div className="text-[18px] md:text-[22px] font-bold tracking-tight leading-none">{mergedReviews.length}</div>
+              <div className="text-[10px] md:text-[11px] uppercase tracking-widest text-foreground/60 mt-1 font-semibold">
+                {mergedReviews.length === 1 ? "Review" : "Reviews"}
+              </div>
+            </div>
           </div>
 
           <div className="h-px bg-gray-100 my-5 md:my-7" />
@@ -158,6 +206,32 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
           <div className="h-px bg-gray-100 my-5 md:my-7" />
 
           <Reviews reviews={mergedReviews} rating={rating} />
+
+          {/* Mobile date picker — desktop has its own in the sticky aside */}
+          <div className="md:hidden mt-6 border hairline rounded-2xl overflow-hidden">
+            <div className="grid grid-cols-2 divide-x hairline">
+              <label className="p-3 block">
+                <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-0.5">Pickup</div>
+                <input
+                  type="date"
+                  value={startDate}
+                  min={minDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full text-[14px] font-semibold bg-transparent outline-none"
+                />
+              </label>
+              <label className="p-3 block">
+                <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-0.5">Return</div>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={plusDaysISO(startDate, 1)}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full text-[14px] font-semibold bg-transparent outline-none"
+                />
+              </label>
+            </div>
+          </div>
         </div>
 
         {/* Right column: sticky booking card (desktop only) */}
@@ -174,14 +248,26 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
 
             <div className="border hairline rounded-2xl overflow-hidden mb-3">
               <div className="grid grid-cols-2 divide-x hairline">
-                <div className="p-3">
-                  <div className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Pickup</div>
-                  <div className="text-[13px] font-semibold">May 17, 2026</div>
-                </div>
-                <div className="p-3">
-                  <div className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Return</div>
-                  <div className="text-[13px] font-semibold">May 20, 2026</div>
-                </div>
+                <label className="p-3 cursor-text block">
+                  <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-0.5">Pickup</div>
+                  <input
+                    type="date"
+                    value={startDate}
+                    min={minDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full text-[13px] font-semibold bg-transparent outline-none"
+                  />
+                </label>
+                <label className="p-3 cursor-text block">
+                  <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-0.5">Return</div>
+                  <input
+                    type="date"
+                    value={endDate}
+                    min={plusDaysISO(startDate, 1)}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full text-[13px] font-semibold bg-transparent outline-none"
+                  />
+                </label>
               </div>
             </div>
 
@@ -195,10 +281,10 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
               </button>
             )}
 
-            <div className="mt-4 space-y-2 text-[12px] text-gray-600">
-              <div className="flex justify-between"><span>3 days × ₱{car.pricePerDay.toLocaleString()}</span><span>₱{(car.pricePerDay * 3).toLocaleString()}</span></div>
-              <div className="flex justify-between"><span>Service fee</span><span>₱{Math.round(car.pricePerDay * 3 * 0.08).toLocaleString()}</span></div>
-              <div className="flex justify-between pt-2 border-t hairline mt-2 font-bold text-[14px] text-black"><span>Total</span><span>₱{(car.pricePerDay * 3 + Math.round(car.pricePerDay * 3 * 0.08)).toLocaleString()}</span></div>
+            <div className="mt-4 space-y-2 text-[12px] text-foreground/70">
+              <div className="flex justify-between"><span>{days} {days === 1 ? "day" : "days"} × ₱{car.pricePerDay.toLocaleString()}</span><span>₱{(car.pricePerDay * days).toLocaleString()}</span></div>
+              <div className="flex justify-between"><span>Service fee</span><span>₱{Math.round(car.pricePerDay * days * 0.08).toLocaleString()}</span></div>
+              <div className="flex justify-between pt-2 border-t hairline mt-2 font-bold text-[14px] text-foreground"><span>Total</span><span>₱{(car.pricePerDay * days + Math.round(car.pricePerDay * days * 0.08)).toLocaleString()}</span></div>
             </div>
           </div>
         </aside>

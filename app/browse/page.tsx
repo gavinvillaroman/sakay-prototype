@@ -17,27 +17,31 @@ function CarRow({ car }: { car: Car }) {
   return (
     <Link
       href={`/car/${car.id}`}
-      className="tap flex items-center gap-3 p-3 rounded-2xl border hairline hover:shadow-sm bg-surface"
+      className="tap flex items-stretch gap-4 p-4 rounded-2xl border hairline hover:shadow-sm bg-surface"
     >
-      <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-surface-soft flex-shrink-0">
+      <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-xl overflow-hidden bg-surface-soft flex-shrink-0">
         <Image src={car.photo} alt={`${car.make} ${car.model}`} fill unoptimized className="object-cover" />
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-[14.5px] font-semibold tracking-tight truncate">
-          {car.make} {car.model}
+
+      <div className="flex-1 min-w-0 flex flex-col justify-between gap-2">
+        <div className="min-w-0">
+          <div className="text-[16.5px] font-bold tracking-tight leading-tight line-clamp-2">
+            {car.make} {car.model}
+          </div>
+          <div className="text-[13px] text-foreground/60 mt-1 truncate">
+            {seater(car) ? `${seater(car)} · ` : ""}{car.location}
+          </div>
         </div>
-        <div className="text-[12px] text-foreground/60 truncate">
-          {seater(car) ? `${seater(car)} · ` : ""}{car.location}
-        </div>
-        <div className="flex items-center gap-2 mt-1">
-          <div className="flex items-center gap-0.5 text-[12px]">
-            <Star size={11} strokeWidth={0} className="fill-yellow-400 text-yellow-400" />
-            <span className="font-semibold">{car.rating.toFixed(2)}</span>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1 text-[13px]">
+            <Star size={13} strokeWidth={0} className="fill-yellow-400 text-yellow-400" />
+            <span className="font-bold">{car.rating.toFixed(2)}</span>
             <span className="text-foreground/50">({car.trips})</span>
           </div>
           {car.instantBook && (
-            <span className="inline-flex items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider text-accent bg-accent/10 rounded-full px-1.5 py-0.5">
-              <Zap size={10} strokeWidth={3} /> Instant
+            <span className="inline-flex items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider text-accent bg-accent/10 rounded-full px-2 py-0.5">
+              <Zap size={11} strokeWidth={3} /> Instant
             </span>
           )}
           {car.regionTag && (
@@ -47,13 +51,16 @@ function CarRow({ car }: { car: Car }) {
           )}
         </div>
       </div>
-      <div className="text-right flex-shrink-0">
-        <div className="text-[14px] font-bold tracking-tight">
-          ₱{car.pricePerDay.toLocaleString()}
+
+      <div className="flex flex-col items-end justify-between flex-shrink-0">
+        <div className="text-right">
+          <div className="text-[16px] font-bold tracking-tight whitespace-nowrap">
+            ₱{car.pricePerDay.toLocaleString()}
+          </div>
+          <div className="text-[10px] text-foreground/50 uppercase tracking-wider font-semibold">/ day</div>
         </div>
-        <div className="text-[10px] text-foreground/50 uppercase tracking-wider font-semibold">/ day</div>
+        <ChevronRight size={18} className="text-foreground/30" />
       </div>
-      <ChevronRight size={16} className="text-foreground/30 flex-shrink-0" />
     </Link>
   );
 }
@@ -90,8 +97,8 @@ function BrowseInner() {
   }, [q]);
 
   return (
-    <div className="max-w-3xl mx-auto px-5 md:px-6 pt-4 md:pt-8">
-      <div className="flex items-end justify-between mb-3 md:mb-6">
+    <div className="max-w-3xl mx-auto px-5 md:px-6 pt-5 md:pt-8">
+      <div className="flex items-end justify-between mb-4 md:mb-6">
         <div>
           <h1 className="text-[26px] md:text-[40px] font-bold tracking-tightest leading-none">Browse</h1>
           <p className="hidden md:block text-[14px] text-foreground/60 mt-2">{cars.length} vehicles · Cabanatuan City</p>
@@ -170,7 +177,7 @@ function BrowseInner() {
       {matches.length === 0 ? (
         <div className="py-16 text-center text-foreground/60 text-[14px]">No cars match your search.</div>
       ) : (
-        <div className="pb-12 md:pb-24 space-y-2.5">
+        <div className="pb-12 md:pb-24 space-y-3">
           {matches.map((c, i) => (
             <div key={c.id} className={`float-in float-in-delay-${Math.min(i + 1, 4)}`}>
               <CarRow car={c} />
