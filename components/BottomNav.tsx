@@ -1,5 +1,5 @@
 "use client";
-import { Home, Search, Sparkles, Receipt, User } from "lucide-react";
+import { Home, Search, Sparkles, Receipt, User, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { flags } from "@/lib/flags";
@@ -8,7 +8,8 @@ const allTabs = [
   { id: "home", href: "/", label: "Home", icon: Home, match: (p: string) => p === "/" },
   { id: "browse", href: "/browse", label: "Browse", icon: Search, match: (p: string) => p.startsWith("/browse") || p.startsWith("/car") },
   { id: "experiences", href: "/experiences", label: "Experiences", icon: Sparkles, match: (p: string) => p.startsWith("/experiences") || p.startsWith("/experience") },
-  { id: "activity", href: "/activity", label: "Activity", icon: Receipt, match: (p: string) => p.startsWith("/activity") },
+  { id: "messages", href: "/messages", label: "Messages", icon: MessageSquare, match: (p: string) => p.startsWith("/messages") },
+  { id: "activity", href: "/activity", label: "Trips", icon: Receipt, match: (p: string) => p.startsWith("/activity") },
   { id: "profile", href: "/profile", label: "Profile", icon: User, match: (p: string) => p.startsWith("/profile") || p.startsWith("/host") },
 ];
 

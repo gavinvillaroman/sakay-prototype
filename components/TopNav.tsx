@@ -8,7 +8,8 @@ const allTabs = [
   { id: "home", href: "/", label: "Home", match: (p: string) => p === "/" },
   { id: "browse", href: "/browse", label: "Browse", match: (p: string) => p.startsWith("/browse") || p.startsWith("/car") },
   { id: "experiences", href: "/experiences", label: "Experiences", match: (p: string) => p.startsWith("/experiences") || p.startsWith("/experience") },
-  { id: "activity", href: "/activity", label: "Activity", match: (p: string) => p.startsWith("/activity") },
+  { id: "messages", href: "/messages", label: "Messages", match: (p: string) => p.startsWith("/messages") },
+  { id: "activity", href: "/activity", label: "Trips", match: (p: string) => p.startsWith("/activity") },
   { id: "black", href: "/black", label: "Sakay Black", match: (p: string) => p.startsWith("/black") },
 ];
 
