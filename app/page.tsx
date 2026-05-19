@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cars, experiences } from "@/lib/mock";
 import CarCard from "@/components/CarCard";
 import ExperienceCard from "@/components/ExperienceCard";
+import PullToRefresh from "@/components/PullToRefresh";
 import { flags } from "@/lib/flags";
 
 const SERVICE_TILES = [
@@ -21,6 +22,7 @@ export default function HomePage() {
 
   return (
     <div>
+      <PullToRefresh />
       {/* HERO (desktop) */}
       <section className="hidden md:block">
         <div className="max-w-7xl mx-auto px-6 pt-16 pb-12">
@@ -155,7 +157,7 @@ export default function HomePage() {
           <h2 className="text-[18px] font-bold tracking-tight">Available in Nueva Ecija</h2>
           <Link href="/browse" className="text-[12px] text-foreground/60">See all</Link>
         </div>
-        <div className="flex gap-3 overflow-x-auto no-scrollbar px-5 pb-2">
+        <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x-mandatory px-5 pb-2">
           {trending.map((c, i) => (
             <div
               key={c.id}

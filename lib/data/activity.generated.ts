@@ -4,58 +4,55 @@
 
 import type { Activity } from "../mock";
 
-const u = (q: string, w = 200) =>
-  `https://images.unsplash.com/${q}?auto=format&fit=crop&w=${w}&q=80`;
-
 export const activity: Activity[] = [
   {
-    id: "a1",
-    type: "experience",
-    title: "Horseback with Drei Parker",
-    subtitle: "Sat, May 17 · 4:00 PM",
-    date: "Upcoming",
-    status: "upcoming",
-    amount: 1998,
-    photo: u("photo-1553284965-83fd3e82fa5a"),
+    "id": "a1",
+    "type": "experience",
+    "title": "Horseback with Drei Parker",
+    "subtitle": "Sat, May 17 · 4:00 PM",
+    "date": "Upcoming",
+    "status": "upcoming",
+    "amount": 1998,
+    "photo": "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=200&q=80"
   },
   {
-    id: "a2",
-    type: "rental",
-    title: "Mitsubishi Montero Sport",
-    subtitle: "SHOTCORNER CORP. · 3 days",
-    date: "May 4 – May 7",
-    status: "completed",
-    amount: 13500,
-    photo: "/cars/mitsubishi-montero.webp",
+    "id": "a2",
+    "type": "rental",
+    "title": "Mitsubishi Montero Sport",
+    "subtitle": "SHOTCORNER CORP. · 3 days",
+    "date": "May 4 – May 7",
+    "status": "completed",
+    "amount": 13500,
+    "photo": "/cars/mitsubishi-montero.webp"
   },
   {
-    id: "a3",
-    type: "rental",
-    title: "Toyota HiAce GL Grandia",
-    subtitle: "SHOTCORNER CORP. · 1 day",
-    date: "Apr 18",
-    status: "canceled",
-    amount: 0,
-    photo: "/cars/toyota-hiace.jpg",
+    "id": "a3",
+    "type": "rental",
+    "title": "Toyota HiAce GL Grandia",
+    "subtitle": "SHOTCORNER CORP. · 1 day",
+    "date": "Apr 18",
+    "status": "canceled",
+    "amount": 0,
+    "photo": "/cars/toyota-hiace.jpg"
   },
   {
-    id: "a5",
-    type: "ride",
-    title: "Ride to Shot Corner",
-    subtitle: "Andrei Mercado · Toyota HiAce",
-    date: "May 9 · 2:34 PM",
-    status: "canceled",
-    amount: 0,
-    photo: u("photo-1502877338535-766e1452684a"),
+    "id": "a5",
+    "type": "ride",
+    "title": "Ride to Shot Corner",
+    "subtitle": "Andrei Mercado · Toyota HiAce",
+    "date": "May 9 · 2:34 PM",
+    "status": "canceled",
+    "amount": 0,
+    "photo": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=200&q=80"
   },
   {
-    id: "a6",
-    type: "ride",
-    title: "Ride to NAIA T3",
-    subtitle: "Marco Reyes · Mirage",
-    date: "May 7 · 6:15 AM",
-    status: "completed",
-    amount: 420,
-    photo: u("photo-1502877338535-766e1452684a"),
-  },
+    "id": "a6",
+    "type": "ride",
+    "title": "Ride to NAIA T3",
+    "subtitle": "Marco Reyes · Mirage",
+    "date": "May 7 · 6:15 AM",
+    "status": "completed",
+    "amount": 420,
+    "photo": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=200&q=80"
+  }
 ];

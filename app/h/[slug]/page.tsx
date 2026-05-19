@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import AppHeader from "@/components/AppHeader";
 import CarCard from "@/components/CarCard";
 import Reviews from "@/components/Reviews";
+import Avatar from "@/components/Avatar";
 import { hostByName, hostCars } from "@/lib/host";
 import { avgRating, getHostReviews } from "@/lib/mock";
 import { ShieldCheck, BadgeCheck, MapPin } from "lucide-react";
@@ -28,15 +29,7 @@ export default function HostProfile({ params }: { params: Promise<{ slug: string
         {/* Hero */}
         <div className="px-5 pt-3 pb-5 flex flex-col items-center text-center">
           <div className="relative">
-            <Image
-              src={photo}
-              alt={host.name}
-              width={88}
-              height={88}
-              unoptimized
-              className="w-22 h-22 rounded-full"
-              style={{ width: 88, height: 88 }}
-            />
+            <Avatar name={host.name} photo={photo} size={88} />
             {isSuperhost && (
               <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-accent text-accent-fg flex items-center justify-center border-2 border-background">
                 <BadgeCheck size={15} strokeWidth={2.5} />

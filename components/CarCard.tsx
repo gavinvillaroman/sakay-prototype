@@ -1,18 +1,22 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { Star, Zap } from "lucide-react";
 import type { Car } from "@/lib/mock";
 
 export default function CarCard({ car, variant = "grid" }: { car: Car; variant?: "grid" | "wide" }) {
+  const [loaded, setLoaded] = useState(false);
   return (
-    <Link href={`/car/${car.id}`} className="block">
-      <div className={`relative ${variant === "wide" ? "aspect-[4/3]" : "aspect-[4/3]"} bg-gray-100 rounded-2xl overflow-hidden`}>
+    <Link href={`/car/${car.id}`} className="tap block">
+      <div className={`relative ${variant === "wide" ? "aspect-[4/3]" : "aspect-[4/3]"} rounded-2xl overflow-hidden ${loaded ? "" : "shimmer"}`}>
         <Image
           src={car.photo}
           alt={`${car.make} ${car.model}`}
           fill
           unoptimized
-          className="object-cover"
+          onLoad={() => setLoaded(true)}
+          className={`object-cover img-fade ${loaded ? "loaded" : ""}`}
         />
         {car.blackOnly && (
           <div className="absolute top-3 left-3 bg-black text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { cars, getCarReviews, avgRating } from "@/lib/mock";
 import { hostSlug } from "@/lib/host";
+import Avatar from "@/components/Avatar";
 import Reviews from "@/components/Reviews";
 import { useApp } from "@/lib/store";
 import { useReviewStore } from "@/lib/reviewStore";
@@ -107,7 +108,7 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
 
           {/* Host */}
           <Link href={`/h/${hostSlug(car.hostName)}`} className="flex items-center gap-3 py-2 -mx-2 px-2 rounded-xl hover:bg-surface-soft">
-            <Image src={car.hostPhoto} alt={car.hostName} width={48} height={48} unoptimized className="w-12 h-12 rounded-full" />
+            <Avatar name={car.hostName} photo={car.hostPhoto} size={48} />
             <div className="flex-1 min-w-0">
               <div className="text-[15px] md:text-[16px] font-semibold flex items-center gap-1">
                 Hosted by {car.hostName}

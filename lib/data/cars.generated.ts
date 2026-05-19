@@ -14,12 +14,16 @@ export const cars: Car[] = [
     "pricePerDay": 5500,
     "rating": 4.93,
     "trips": 92,
-    "location": "Quezon City",
+    "location": "Cabanatuan City",
     "hostName": "SHOTCORNER CORP.",
     "hostPhoto": "https://i.pravatar.cc/150?img=33",
     "hostSuperhost": true,
     "photo": "/cars/toyota-hiace.jpg",
-    "features": ["12-seater", "Diesel auto", "USB ports"],
+    "features": [
+      "12-seater",
+      "Diesel auto",
+      "USB ports"
+    ],
     "instantBook": true,
     "driverOption": "both"
   },
@@ -32,12 +36,16 @@ export const cars: Car[] = [
     "pricePerDay": 5200,
     "rating": 4.88,
     "trips": 71,
-    "location": "Pasig",
+    "location": "Cabanatuan City",
     "hostName": "SHOTCORNER CORP.",
     "hostPhoto": "https://i.pravatar.cc/150?img=33",
     "hostSuperhost": true,
     "photo": "/cars/nissan-nv350.jpg",
-    "features": ["15-seater", "Reclining seats", "Captain's chairs"],
+    "features": [
+      "15-seater",
+      "Reclining seats",
+      "Captain's chairs"
+    ],
     "instantBook": true,
     "driverOption": "both"
   },
@@ -50,12 +58,16 @@ export const cars: Car[] = [
     "pricePerDay": 2800,
     "rating": 4.91,
     "trips": 58,
-    "location": "Makati",
+    "location": "Cabanatuan City",
     "hostName": "SHOTCORNER CORP.",
     "hostPhoto": "https://i.pravatar.cc/150?img=33",
     "hostSuperhost": true,
     "photo": "/cars/nissan-almera.avif",
-    "features": ["Compact sedan", "Fuel-efficient", "Push start"],
+    "features": [
+      "Compact sedan",
+      "Fuel-efficient",
+      "Push start"
+    ],
     "instantBook": true,
     "driverOption": "both"
   },
@@ -68,12 +80,16 @@ export const cars: Car[] = [
     "pricePerDay": 3200,
     "rating": 4.94,
     "trips": 124,
-    "location": "Cabanatuan, NE",
+    "location": "Cabanatuan City",
     "hostName": "SHOTCORNER CORP.",
     "hostPhoto": "https://i.pravatar.cc/150?img=33",
     "hostSuperhost": true,
     "photo": "/cars/honda-brv.avif",
-    "features": ["7-seater", "Fuel-efficient", "Family-friendly"],
+    "features": [
+      "7-seater",
+      "Fuel-efficient",
+      "Family-friendly"
+    ],
     "instantBook": true,
     "driverOption": "both"
   },
@@ -86,12 +102,16 @@ export const cars: Car[] = [
     "pricePerDay": 4500,
     "rating": 4.96,
     "trips": 87,
-    "location": "BGC, Taguig",
+    "location": "Cabanatuan City",
     "hostName": "SHOTCORNER CORP.",
     "hostPhoto": "https://i.pravatar.cc/150?img=33",
     "hostSuperhost": true,
     "photo": "/cars/mitsubishi-montero.webp",
-    "features": ["7-seater 4x4", "Diesel turbo", "Paddle shifters"],
+    "features": [
+      "7-seater 4x4",
+      "Diesel turbo",
+      "Paddle shifters"
+    ],
     "instantBook": false,
     "driverOption": "both"
   },
@@ -104,12 +124,16 @@ export const cars: Car[] = [
     "pricePerDay": 1200,
     "rating": 5,
     "trips": 24,
-    "location": "General Luna, Siargao",
+    "location": "Cabanatuan City",
     "hostName": "SHOTCORNER CORP.",
     "hostPhoto": "https://i.pravatar.cc/150?img=33",
     "hostSuperhost": true,
     "photo": "/cars/vespa-jb.jpg",
-    "features": ["Limited edition", "150cc", "2 helmets incl."],
+    "features": [
+      "Limited edition",
+      "150cc",
+      "2 helmets incl."
+    ],
     "instantBook": true,
     "driverOption": "self-drive",
     "regionTag": "Siargao"

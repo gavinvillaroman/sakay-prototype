@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound, useRouter } from "next/navigation";
 import { experiences } from "@/lib/mock";
 import { useApp } from "@/lib/store";
+import Avatar from "@/components/Avatar";
 import { Star, Clock, MapPin, Heart, Share } from "lucide-react";
 
 export default function ExperienceDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -58,7 +59,7 @@ export default function ExperienceDetail({ params }: { params: Promise<{ id: str
         </div>
 
         <div className="px-5 py-4 flex items-center gap-3 border-b hairline">
-          <Image src={exp.hostPhoto} alt={exp.host} width={44} height={44} unoptimized className="w-11 h-11 rounded-full" />
+          <Avatar name={exp.host} photo={exp.hostPhoto} size={44} />
           <div className="flex-1 min-w-0">
             <div className="text-[14px] font-semibold">Hosted by {exp.host}</div>
             <div className="text-[12px] text-gray-500">Sakay verified host</div>
