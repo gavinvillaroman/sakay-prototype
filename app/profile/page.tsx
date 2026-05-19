@@ -14,9 +14,11 @@ import {
   ChevronRight,
   Crown,
   LayoutDashboard,
-  LogIn,
   LogOut,
   Plus,
+  Mail,
+  Phone,
+  Pencil,
 } from "lucide-react";
 
 const items = [
@@ -28,48 +30,48 @@ const items = [
 ];
 
 export default function ProfilePage() {
-  const { user: authUser, loading, signOut } = useAuth();
-  const isSignedIn = !loading && !!authUser;
+  const { signOut } = useAuth();
   const isBlackMember = useSubscription((s) => s.isBlackMember);
 
   return (
     <div className="max-w-3xl mx-auto bg-background pb-12">
       <div className="px-5 md:px-6 pt-6 md:pt-10 pb-5">
-        {isSignedIn ? (
-          <div className="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div className="w-16 h-16 rounded-full bg-accent text-accent-fg flex items-center justify-center text-[20px] font-semibold tracking-tight flex-shrink-0">
-              {user.firstName[0]}{user.lastName[0]}
-            </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-[22px] font-bold tracking-tightest leading-tight truncate">
-                {user.firstName} {user.lastName}
-              </h1>
-              <div className="flex items-center gap-1.5 text-[12px] text-foreground/60 mt-0.5">
-                <Star size={11} className="fill-current" />
-                <span className="font-medium">{user.rating}</span>
-                <span className="text-foreground/40">·</span>
-                <span>{user.trips} trips</span>
-                <span className="text-foreground/40">·</span>
-                <span>Joined {user.joined}</span>
-              </div>
+        <div className="flex items-center gap-4 float-in">
+          <div className="w-20 h-20 rounded-full bg-accent text-accent-fg flex items-center justify-center text-[26px] font-semibold tracking-tight flex-shrink-0">
+            {user.firstName[0]}{user.lastName[0]}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-[24px] font-bold tracking-tightest leading-tight truncate">
+              {user.firstName} {user.lastName}
+            </h1>
+            <div className="flex items-center gap-1.5 text-[12.5px] text-foreground/60 mt-1">
+              <Star size={12} className="fill-yellow-400 text-yellow-400" />
+              <span className="font-semibold">{user.rating}</span>
+              <span className="text-foreground/40">·</span>
+              <span>{user.trips} trips</span>
+              <span className="text-foreground/40">·</span>
+              <span>Joined {user.joined}</span>
             </div>
           </div>
-        ) : (
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-surface-soft text-foreground/40 flex items-center justify-center flex-shrink-0">
-              <LogIn size={22} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-[22px] font-bold tracking-tightest leading-tight">Welcome to Sakay</h1>
-              <Link
-                href="/auth/login"
-                className="inline-flex mt-2 items-center gap-1.5 rounded-full bg-accent text-accent-fg text-[13px] font-semibold px-4 py-1.5 transition active:scale-95"
-              >
-                Sign in <ChevronRight size={13} />
-              </Link>
-            </div>
+          <button
+            aria-label="Edit profile"
+            className="tap w-9 h-9 rounded-full bg-surface-soft flex items-center justify-center flex-shrink-0"
+          >
+            <Pencil size={15} />
+          </button>
+        </div>
+
+        {/* Contact rows — confirms the profile feels real */}
+        <div className="mt-4 space-y-1.5 text-[13px] text-foreground/70">
+          <div className="flex items-center gap-2">
+            <Mail size={14} className="text-foreground/40" />
+            <span className="truncate">{user.email}</span>
           </div>
-        )}
+          <div className="flex items-center gap-2">
+            <Phone size={14} className="text-foreground/40" />
+            <span>{user.phone}</span>
+          </div>
+        </div>
       </div>
 
       {/* Sakay Black membership */}
@@ -169,22 +171,26 @@ export default function ProfilePage() {
         })}
       </div>
 
-      {isSignedIn && (
-        <form action="/auth/signout" method="post" onSubmit={() => { void signOut(); }}>
-          <button
-            type="submit"
-            className="mx-5 flex items-center justify-center gap-2 text-red-500 font-semibold text-[13px] py-3 mb-6 w-[calc(100%-2.5rem)]"
-          >
-            <LogOut size={15} /> Sign out
-          </button>
-        </form>
-      )}
-
-      <div className="text-center text-[10px] text-foreground/40 pb-6 tracking-wide">
-        Sakay · {user.email} ·{" "}
+      <div className="text-center text-[10px] text-foreground/40 pt-4 pb-6 tracking-wide">
+        Sakay ·{" "}
         <Link href="/legal/terms" className="underline">Terms</Link>{" "}·{" "}
         <Link href="/legal/privacy" className="underline">Privacy</Link>
       </div>
+
+      {/* Sign out at the very bottom */}
+      <form
+        action="/auth/signout"
+        method="post"
+        onSubmit={() => { void signOut(); }}
+        className="px-5 pb-8"
+      >
+        <button
+          type="submit"
+          className="tap w-full flex items-center justify-center gap-2 text-red-500 font-semibold text-[14px] py-3.5 rounded-2xl border border-red-500/30 hover:bg-red-500/5"
+        >
+          <LogOut size={16} /> Sign out
+        </button>
+      </form>
     </div>
   );
 }
