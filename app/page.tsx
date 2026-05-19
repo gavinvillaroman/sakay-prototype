@@ -8,7 +8,7 @@ import { flags } from "@/lib/flags";
 
 const SERVICE_TILES = [
   { href: "/browse?driver=self-drive", label: "Self-drive", Icon: Car, bg: "bg-white/15" },
-  { href: "/browse?driver=with-driver", label: "Chauffeured", Icon: UserCheck, bg: "bg-white/15" },
+  { href: "/browse?driver=with-driver", label: "With Driver", Icon: UserCheck, bg: "bg-white/15" },
   { href: "/black", label: "Black", Icon: Crown, bg: "bg-black", text: "text-white" },
   { href: "/browse", label: "More", Icon: MoreHorizontal, bg: "bg-white/15" },
 ];
@@ -91,7 +91,7 @@ export default function HomePage() {
         style={{
           marginTop: "calc(-1 * env(safe-area-inset-top))",
           paddingTop: "calc(env(safe-area-inset-top) + 12px)",
-          paddingBottom: "20px",
+          paddingBottom: "36px",
         }}
       >
         <div className="px-5">
@@ -101,7 +101,7 @@ export default function HomePage() {
               <div className="text-[22px] font-bold tracking-tight leading-tight">Hi, Gavin</div>
             </div>
             <button className="flex items-center gap-1 text-[12px] font-medium bg-white/15 rounded-full px-3 py-1.5">
-              <MapPin size={13} /> BGC, Taguig
+              <MapPin size={13} /> Nueva Ecija
             </button>
           </div>
 
@@ -116,7 +116,7 @@ export default function HomePage() {
       </section>
 
       {/* MOBILE — service tile grid (4 across) */}
-      <section className="md:hidden px-5 -mt-6">
+      <section className="md:hidden px-5 -mt-5">
         <div className="bg-surface rounded-2xl border hairline p-3 grid grid-cols-4 gap-2 shadow-[0_4px_24px_-12px_rgba(0,0,0,0.15)]">
           {SERVICE_TILES.map(({ href, label, Icon, bg, text }) => (
             <Link
@@ -139,7 +139,6 @@ export default function HomePage() {
           href="/browse?driver=self-drive"
           className="block relative overflow-hidden rounded-2xl bg-accent text-accent-fg p-5 active:opacity-95"
         >
-          <div className="text-[11px] uppercase tracking-[0.2em] opacity-80 font-semibold mb-1">Trending</div>
           <div className="text-[20px] font-bold tracking-tight leading-tight mb-1">
             Cheaper. Faster.<br />Drive yourself.
           </div>
@@ -150,10 +149,10 @@ export default function HomePage() {
         </Link>
       </section>
 
-      {/* MOBILE — Trending carousel */}
+      {/* MOBILE — Available in Nueva Ecija */}
       <section className="md:hidden mt-6">
         <div className="px-5 flex items-end justify-between mb-3">
-          <h2 className="text-[18px] font-bold tracking-tight">Trending in Metro Manila</h2>
+          <h2 className="text-[18px] font-bold tracking-tight">Available in Nueva Ecija</h2>
           <Link href="/browse" className="text-[12px] text-foreground/60">See all</Link>
         </div>
         <div className="flex gap-3 overflow-x-auto no-scrollbar px-5 pb-2">
@@ -165,30 +164,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* MOBILE — Province strip */}
-      <section className="md:hidden px-5 mt-6">
-        <h2 className="text-[18px] font-bold tracking-tight mb-3">For the provinces</h2>
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { label: "Cabanatuan", q: "Cabanatuan" },
-            { label: "Tagaytay", q: "Tagaytay" },
-            { label: "Siargao", q: "Siargao" },
-          ].map((p) => (
-            <Link
-              key={p.q}
-              href={`/browse?location=${p.q}`}
-              className="rounded-xl border hairline p-3 text-center active:bg-surface-soft"
-            >
-              <div className="text-[13px] font-semibold tracking-tight">{p.label}</div>
-              <div className="text-[10px] text-foreground/50">Explore</div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Sakay Black */}
+      {/* Sakay Black — desktop only (mobile already has the Black tile) */}
       {flags.black && (
-        <section className="max-w-7xl mx-auto px-5 md:px-6 mt-6 md:mt-12">
+        <section className="hidden md:block max-w-7xl mx-auto px-6 mt-12">
           <Link href="/black" className="block relative overflow-hidden rounded-2xl md:rounded-3xl bg-black text-white p-5 md:p-10 group">
             <div className="md:grid md:grid-cols-2 md:gap-10 md:items-center">
               <div>
@@ -241,19 +219,22 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Available near you (desktop full grid, mobile compact list) */}
-      <section className="max-w-7xl mx-auto px-5 md:px-6 mt-6 md:mt-16 pb-12 md:pb-24">
-        <div className="flex items-end justify-between mb-3 md:mb-5">
+      {/* Available near you — desktop grid only (mobile uses the carousel above) */}
+      <section className="hidden md:block max-w-7xl mx-auto px-6 mt-16 pb-24">
+        <div className="flex items-end justify-between mb-5">
           <div>
-            <h2 className="text-[18px] md:text-[28px] font-bold md:font-semibold tracking-tight md:tracking-tightest">Available near you</h2>
-            <p className="hidden md:block text-[14px] text-gray-500 mt-1">All hosted by verified Sakay partners.</p>
+            <h2 className="text-[28px] font-semibold tracking-tightest">Available in Nueva Ecija</h2>
+            <p className="text-[14px] text-gray-500 mt-1">All hosted by verified Sakay partners.</p>
           </div>
-          <Link href="/browse" className="text-[12px] md:text-[14px] text-foreground/60 hover:text-foreground">See all</Link>
+          <Link href="/browse" className="text-[14px] text-foreground/60 hover:text-foreground">See all</Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+        <div className="grid grid-cols-4 gap-6">
           {nearby.map((c) => <CarCard key={c.id} car={c} />)}
         </div>
       </section>
+
+      {/* Mobile bottom spacing so the last card clears the fixed nav */}
+      <div className="md:hidden h-20" />
 
       {/* Footer (desktop) */}
       <footer className="hidden md:block border-t hairline">
