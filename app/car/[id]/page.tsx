@@ -171,6 +171,39 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
             </div>
           </div>
 
+          {/* Trip dates — mobile only (desktop has them in the sticky aside) */}
+          <div id="trip-dates" className="md:hidden mt-6 scroll-mt-20">
+            <h2 className="text-[18px] font-bold tracking-tight mb-3">Trip dates</h2>
+            <div className="rounded-2xl border hairline overflow-hidden">
+              <div className="grid grid-cols-2 divide-x hairline">
+                <label className="p-4 block active:bg-surface-soft">
+                  <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Pickup</div>
+                  <input
+                    type="date"
+                    value={startDate}
+                    min={minDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full text-[16px] font-bold tracking-tight bg-transparent outline-none"
+                  />
+                </label>
+                <label className="p-4 block active:bg-surface-soft">
+                  <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Return</div>
+                  <input
+                    type="date"
+                    value={endDate}
+                    min={plusDaysISO(startDate, 1)}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full text-[16px] font-bold tracking-tight bg-transparent outline-none"
+                  />
+                </label>
+              </div>
+              <div className="border-t hairline px-4 py-2.5 text-[12px] text-foreground/60 flex items-center justify-between">
+                <span><span className="font-semibold text-foreground">{days} {days === 1 ? "day" : "days"}</span> selected</span>
+                <span className="text-accent font-semibold">Free cancellation &gt; 24h</span>
+              </div>
+            </div>
+          </div>
+
           <div className="h-px bg-hairline my-6 md:my-7" />
 
           {/* Host card */}
@@ -353,15 +386,22 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
         className="md:hidden fixed inset-x-0 z-20 border-t hairline bg-background px-5 py-3 flex items-center justify-between gap-3"
         style={{ bottom: "calc(env(safe-area-inset-bottom) + 56px)" }}
       >
-        <div className="min-w-0">
+        <a
+          href="#trip-dates"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById("trip-dates")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+          className="min-w-0 flex-1 tap"
+        >
           <div className="text-[16px] font-bold tracking-tight underline underline-offset-2">
             ₱{total.toLocaleString()}
           </div>
           <div className="text-[11.5px] text-foreground/60 truncate">
-            For {days} {days === 1 ? "day" : "days"} · {fmtShort(startDate)} – {fmtShort(endDate)}
+            For {days} {days === 1 ? "day" : "days"} · {fmtShort(startDate)} – {fmtShort(endDate)} <span className="text-accent">· change</span>
           </div>
           <div className="text-[10.5px] text-accent font-semibold mt-0.5">Free cancellation</div>
-        </div>
+        </a>
         {car.blackOnly ? (
           <Link href="/black" className="tap bg-black text-white rounded-full px-7 py-3.5 font-semibold text-[14.5px] flex-shrink-0">
             Join Black
