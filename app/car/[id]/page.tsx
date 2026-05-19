@@ -9,7 +9,10 @@ import Avatar from "@/components/Avatar";
 import Reviews from "@/components/Reviews";
 import { useApp } from "@/lib/store";
 import { useReviewStore } from "@/lib/reviewStore";
-import { Star, Zap, ShieldCheck, Car as CarIcon, Heart, Share, ArrowLeft, BadgeCheck } from "lucide-react";
+import {
+  Star, Zap, ShieldCheck, Heart, Share, ArrowLeft, BadgeCheck,
+  Award, KeyRound, Snowflake, CalendarDays, MapPin, Flag, Camera,
+} from "lucide-react";
 
 const today = () => new Date().toISOString().slice(0, 10);
 const plusDaysISO = (iso: string, n: number) => {
@@ -26,6 +29,37 @@ const fmtShort = (iso: string) => {
   const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][Number(m) - 1];
   return `${month} ${Number(d)}`;
 };
+const categoryLabel = (cat: string) => ({
+  sedan: "Sedan",
+  suv: "SUV",
+  van: "Van",
+  motorcycle: "Motorbike",
+  black: "Sakay Black",
+  all: "Vehicle",
+}[cat] ?? "Vehicle");
+
+const HIGHLIGHTS = (instantBook: boolean, superhost: boolean) => [
+  instantBook && {
+    Icon: Zap,
+    title: "Instant booking",
+    sub: "No waiting — your reservation is confirmed the moment you tap Reserve.",
+  },
+  superhost && {
+    Icon: Award,
+    title: "Verified fleet operator",
+    sub: "Hosted by a top-rated Sakay partner with consistent 5-star service.",
+  },
+  {
+    Icon: KeyRound,
+    title: "Smooth pickup",
+    sub: "Most renters get the keys within 10 minutes of arriving.",
+  },
+  {
+    Icon: Snowflake,
+    title: "Cleaned between every trip",
+    sub: "Interior detailed, full tank, sanitized before you take the wheel.",
+  },
+].filter(Boolean) as { Icon: typeof Zap; title: string; sub: string }[];
 
 export default function CarDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -38,7 +72,6 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
   const minDate = plusDaysISO(today(), 1);
   const [startDate, setStartDate] = useState(minDate);
   const [endDate, setEndDate] = useState(plusDaysISO(minDate, 3));
-  // Auto-correct end date when start jumps past it.
   if (endDate <= startDate) {
     const fixed = plusDaysISO(startDate, 1);
     if (fixed !== endDate) setTimeout(() => setEndDate(fixed), 0);
@@ -54,180 +87,216 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
 
   const mergedReviews = [...userReviews, ...getCarReviews(car.id)];
   const rating = avgRating(mergedReviews) || car.rating;
+  const highlights = HIGHLIGHTS(car.instantBook, car.hostSuperhost).slice(0, 3);
+  const subtotal = car.pricePerDay * days;
+  const serviceFee = Math.round(subtotal * 0.08);
+  const total = subtotal + serviceFee;
 
   return (
     <div>
-      {/* Mobile back button overlay */}
-      <button
-        onClick={() => router.back()}
-        className="md:hidden absolute top-3 left-4 z-20 w-9 h-9 rounded-full bg-white shadow-sm flex items-center justify-center"
-      >
-        <ArrowLeft size={18} />
-      </button>
+      {/* Hero with floating Airbnb-style chips */}
+      <div className="relative bg-surface-soft">
+        {/* Floating nav */}
+        <div className="absolute top-3 left-0 right-0 z-20 px-4 flex items-center justify-between">
+          <button
+            onClick={() => router.back()}
+            aria-label="Back"
+            className="tap w-10 h-10 rounded-full bg-white/95 backdrop-blur shadow-md flex items-center justify-center"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <div className="flex gap-2">
+            <button aria-label="Share" className="tap w-10 h-10 rounded-full bg-white/95 backdrop-blur shadow-md flex items-center justify-center">
+              <Share size={16} />
+            </button>
+            <button aria-label="Save" className="tap w-10 h-10 rounded-full bg-white/95 backdrop-blur shadow-md flex items-center justify-center">
+              <Heart size={16} />
+            </button>
+          </div>
+        </div>
 
-      {/* Hero image */}
-      <div className="relative bg-gray-100">
         <div className="max-w-7xl mx-auto md:px-6 md:pt-6">
-          <div className="aspect-[4/3] md:aspect-[16/9] relative md:rounded-3xl overflow-hidden bg-gray-100">
+          <div className="aspect-[4/3] md:aspect-[16/9] relative md:rounded-3xl overflow-hidden">
             <Image src={car.photo} alt={`${car.make} ${car.model}`} fill unoptimized className="object-cover" />
-            {car.blackOnly && (
-              <div className="absolute top-4 left-4 bg-black text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
-                Sakay Black only
-              </div>
-            )}
-            {car.regionTag && !car.blackOnly && (
-              <div className="absolute top-4 left-4 bg-white text-black text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shadow-sm">
+            {car.regionTag && (
+              <div className="absolute top-16 left-4 md:top-4 bg-white/95 backdrop-blur text-foreground text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shadow-sm">
                 {car.regionTag}
               </div>
             )}
-            <div className="absolute top-4 right-4 hidden md:flex gap-2">
-              <button className="w-9 h-9 rounded-full bg-white shadow-sm flex items-center justify-center"><Share size={16} /></button>
-              <button className="w-9 h-9 rounded-full bg-white shadow-sm flex items-center justify-center"><Heart size={16} /></button>
+            {/* Photo counter chip */}
+            <div className="absolute bottom-4 right-4 bg-black/65 text-white text-[11px] font-semibold tracking-tight px-2.5 py-1 rounded-full flex items-center gap-1.5">
+              <Camera size={11} /> 1 / 1
             </div>
           </div>
         </div>
       </div>
 
-      {/* Body */}
       <div className="max-w-7xl mx-auto px-5 md:px-6 md:py-10 grid md:grid-cols-3 md:gap-10">
-        {/* Left column: details */}
-        <div className="md:col-span-2 pt-4 md:pt-0">
-          <div className="text-[11px] uppercase tracking-widest text-gray-500 mb-1">
-            {car.year} · {car.location}
-          </div>
-          <h1 className="text-[24px] md:text-[36px] font-bold tracking-tightest leading-tight">
+        {/* LEFT — content */}
+        <div className="md:col-span-2 pt-5 md:pt-0">
+          {/* Title */}
+          <h1 className="text-[26px] md:text-[36px] font-bold tracking-tightest leading-[1.1]">
             {car.make} {car.model}
           </h1>
-          <div className="flex items-center gap-3 mt-2 md:mt-3 text-[13px] md:text-[14px]">
-            <div className="flex items-center gap-1">
-              <Star size={13} className="fill-yellow-400 text-yellow-400" />
-              <span className="font-medium">{rating.toFixed(2)}</span>
-            </div>
-            {car.instantBook && (
-              <div className="flex items-center gap-1 text-accent">
-                <Zap size={13} strokeWidth={3} />
-                <span className="font-medium">Instant book</span>
-              </div>
-            )}
+          <div className="text-[14.5px] md:text-[15.5px] text-foreground/70 mt-1">
+            {categoryLabel(car.category)} in {car.location}
+          </div>
+          <div className="text-[14.5px] md:text-[15.5px] text-foreground/70">
+            {car.features.slice(0, 3).join(" · ")}
           </div>
 
-          {/* Stat tiles — book count is a trust signal, lead with it */}
-          <div className="grid grid-cols-3 gap-2 mt-4 md:mt-5">
-            <div className="rounded-2xl border hairline p-3 text-center">
-              <div className="text-[18px] md:text-[22px] font-bold tracking-tight leading-none">{car.trips}</div>
-              <div className="text-[10px] md:text-[11px] uppercase tracking-widest text-foreground/60 mt-1 font-semibold">
+          {/* Airbnb-style 3-up stats with vertical dividers */}
+          <div className="grid grid-cols-3 mt-6 border hairline rounded-2xl divide-x hairline">
+            <div className="text-center py-4 px-2">
+              <div className="text-[22px] md:text-[26px] font-bold tracking-tight leading-none">{rating.toFixed(2)}</div>
+              <div className="flex items-center justify-center gap-0.5 mt-2 text-yellow-400">
+                {[0,1,2,3,4].map((i) => (
+                  <Star key={i} size={9} strokeWidth={0} className="fill-yellow-400" />
+                ))}
+              </div>
+            </div>
+            <div className="text-center py-4 px-2 flex flex-col items-center justify-center">
+              <div className="flex items-center gap-1.5">
+                <Award size={20} className="text-accent" strokeWidth={2} />
+              </div>
+              <div className="text-[11px] md:text-[12px] font-bold tracking-tight mt-1.5 leading-tight">
+                Verified<br/>fleet
+              </div>
+            </div>
+            <div className="text-center py-4 px-2">
+              <div className="text-[22px] md:text-[26px] font-bold tracking-tight leading-none">{car.trips}</div>
+              <div className="text-[11px] md:text-[12px] text-foreground/60 font-semibold mt-2 underline underline-offset-2">
                 {car.trips === 1 ? "Booking" : "Bookings"}
               </div>
             </div>
-            <div className="rounded-2xl border hairline p-3 text-center">
-              <div className="text-[18px] md:text-[22px] font-bold tracking-tight leading-none">{rating.toFixed(1)}</div>
-              <div className="text-[10px] md:text-[11px] uppercase tracking-widest text-foreground/60 mt-1 font-semibold">
-                Rating
-              </div>
-            </div>
-            <div className="rounded-2xl border hairline p-3 text-center">
-              <div className="text-[18px] md:text-[22px] font-bold tracking-tight leading-none">{mergedReviews.length}</div>
-              <div className="text-[10px] md:text-[11px] uppercase tracking-widest text-foreground/60 mt-1 font-semibold">
-                {mergedReviews.length === 1 ? "Review" : "Reviews"}
-              </div>
-            </div>
           </div>
 
-          {/* Date selector — sits right under the stats, big and tappable */}
-          <div className="md:hidden mt-4 rounded-2xl border hairline overflow-hidden">
-            <div className="grid grid-cols-2 divide-x hairline">
-              <label className="p-3.5 block active:bg-surface-soft">
-                <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Pickup</div>
-                <input
-                  type="date"
-                  value={startDate}
-                  min={minDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full text-[15px] font-bold tracking-tight bg-transparent outline-none"
-                />
-              </label>
-              <label className="p-3.5 block active:bg-surface-soft">
-                <div className="text-[10px] uppercase tracking-widest text-foreground/60 font-semibold mb-1">Return</div>
-                <input
-                  type="date"
-                  value={endDate}
-                  min={plusDaysISO(startDate, 1)}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full text-[15px] font-bold tracking-tight bg-transparent outline-none"
-                />
-              </label>
-            </div>
-            <div className="border-t hairline px-3.5 py-2 text-[11px] text-foreground/60">
-              <span className="font-semibold text-foreground">{days} {days === 1 ? "day" : "days"}</span> · driver option selected at checkout
-            </div>
-          </div>
+          <div className="h-px bg-hairline my-6 md:my-7" />
 
-          <div className="h-px bg-gray-100 my-5 md:my-7" />
-
-          {/* Host */}
-          <Link href={`/h/${hostSlug(car.hostName)}`} className="flex items-center gap-3 py-2 -mx-2 px-2 rounded-xl hover:bg-surface-soft">
-            <Avatar name={car.hostName} photo={car.hostPhoto} size={48} />
+          {/* Host card */}
+          <Link
+            href={`/h/${hostSlug(car.hostName)}`}
+            className="tap flex items-center gap-3 -mx-2 px-2 py-2 rounded-xl"
+          >
+            <Avatar name={car.hostName} photo={car.hostPhoto} size={56} />
             <div className="flex-1 min-w-0">
-              <div className="text-[15px] md:text-[16px] font-semibold flex items-center gap-1">
+              <div className="text-[16px] md:text-[17px] font-bold tracking-tight flex items-center gap-1">
                 Hosted by {car.hostName}
-                {car.hostSuperhost && <BadgeCheck size={15} className="text-accent" />}
+                {car.hostSuperhost && <BadgeCheck size={16} className="text-accent" />}
               </div>
-              <div className="text-[12px] md:text-[13px] text-foreground/60">
+              <div className="text-[13px] text-foreground/60 mt-0.5">
                 {car.hostSuperhost ? "Verified fleet · 100% response rate" : "Verified host"}
               </div>
             </div>
-            <span className="text-foreground/40">›</span>
+            <span className="text-foreground/40 text-lg">›</span>
           </Link>
 
-          <div className="h-px bg-gray-100 my-5 md:my-7" />
+          <div className="h-px bg-hairline my-6 md:my-7" />
 
-          {/* Features */}
-          <div className="grid grid-cols-3 gap-3 md:max-w-lg">
-            {car.features.map((f) => (
-              <div key={f} className="text-center">
-                <div className="w-10 h-10 md:w-12 md:h-12 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-1.5">
-                  <CarIcon size={16} />
+          {/* Highlights (Airbnb-style icon + title + sub rows) */}
+          <div className="space-y-5">
+            {highlights.map(({ Icon, title, sub }) => (
+              <div key={title} className="flex items-start gap-4">
+                <Icon size={28} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-[15.5px] md:text-[16px] font-bold tracking-tight">{title}</div>
+                  <div className="text-[13.5px] md:text-[14px] text-foreground/60 mt-0.5 leading-relaxed">
+                    {sub}
+                  </div>
                 </div>
-                <div className="text-[11px] md:text-[12px] text-gray-700 leading-tight">{f}</div>
               </div>
             ))}
           </div>
 
-          <div className="h-px bg-gray-100 my-5 md:my-7" />
+          <div className="h-px bg-hairline my-6 md:my-7" />
 
-          {/* Protection */}
-          <div className="flex items-start gap-3">
-            <ShieldCheck size={20} className="flex-shrink-0 mt-0.5" />
-            <div>
-              <div className="text-[14px] md:text-[16px] font-semibold mb-0.5">Sakay Protection included</div>
-              <div className="text-[12px] md:text-[13.5px] text-gray-500 leading-relaxed">
-                ₱2,000,000 liability coverage, 24/7 roadside assistance, and a free swap if the host cancels.
-              </div>
-            </div>
-          </div>
-
-          <div className="h-px bg-gray-100 my-5 md:my-7" />
-
-          <div className="text-[12px] uppercase tracking-widest text-gray-500 font-semibold mb-2">About this car</div>
-          <p className="text-[14px] md:text-[15px] text-gray-700 leading-relaxed max-w-2xl">
+          {/* About */}
+          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-3">About this {car.category === "motorcycle" ? "bike" : "car"}</h2>
+          <p className="text-[14.5px] md:text-[15.5px] text-foreground/80 leading-[1.65] max-w-2xl">
             Pristine {car.make} {car.model} kept in {car.location}. Recently serviced, full tank, and meticulously detailed before every trip. Pet-free, smoke-free.
           </p>
 
-          <div className="h-px bg-gray-100 my-5 md:my-7" />
+          <div className="h-px bg-hairline my-6 md:my-7" />
 
+          {/* What this vehicle offers */}
+          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-4">What this {car.category === "motorcycle" ? "bike" : "car"} offers</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3.5 gap-x-6 md:max-w-xl">
+            {car.features.map((f) => (
+              <div key={f} className="flex items-center gap-3">
+                <ShieldCheck size={18} strokeWidth={1.5} className="text-foreground/70 flex-shrink-0" />
+                <div className="text-[14.5px] md:text-[15px]">{f}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="h-px bg-hairline my-6 md:my-7" />
+
+          {/* Where you'll pick up */}
+          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-2">Where you&apos;ll pick up</h2>
+          <div className="text-[14.5px] text-foreground/70 mb-3">{car.location}</div>
+          <div className="aspect-[16/9] md:aspect-[2/1] rounded-2xl bg-surface-soft flex items-center justify-center text-foreground/40">
+            <MapPin size={28} strokeWidth={1.5} />
+          </div>
+
+          <div className="h-px bg-hairline my-6 md:my-7" />
+
+          {/* Reviews */}
           <Reviews reviews={mergedReviews} rating={rating} />
+
+          <div className="h-px bg-hairline my-6 md:my-7" />
+
+          {/* Things to know */}
+          <h2 className="text-[20px] md:text-[24px] font-bold tracking-tight mb-4">Things to know</h2>
+          <div className="grid md:grid-cols-3 gap-5 md:gap-6">
+            <div>
+              <div className="flex items-center gap-2 text-[15px] font-bold tracking-tight">
+                <CalendarDays size={17} /> Cancellation
+              </div>
+              <ul className="mt-2 space-y-1 text-[13.5px] text-foreground/70 leading-relaxed">
+                <li>Free cancellation &gt; 24h before pickup</li>
+                <li>50% refund 12–24h before</li>
+                <li>No refund under 12h</li>
+              </ul>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 text-[15px] font-bold tracking-tight">
+                <KeyRound size={17} /> Pickup &amp; return
+              </div>
+              <ul className="mt-2 space-y-1 text-[13.5px] text-foreground/70 leading-relaxed">
+                <li>Pickup at 10:00 AM</li>
+                <li>Return at 10:00 AM</li>
+                <li>Bring driver&apos;s license + 1 ID</li>
+              </ul>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 text-[15px] font-bold tracking-tight">
+                <ShieldCheck size={17} /> Safety &amp; protection
+              </div>
+              <ul className="mt-2 space-y-1 text-[13.5px] text-foreground/70 leading-relaxed">
+                <li>₱2M Sakay liability coverage</li>
+                <li>24/7 roadside assistance</li>
+                <li>Pet-free, smoke-free</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="h-px bg-hairline my-6 md:my-7" />
+
+          <Link href="/legal/help" className="tap inline-flex items-center gap-2 text-[14px] text-foreground/70 underline underline-offset-4">
+            <Flag size={14} /> Report this listing
+          </Link>
         </div>
 
-        {/* Right column: sticky booking card (desktop only) */}
+        {/* RIGHT — desktop sticky booking card */}
         <aside className="hidden md:block">
-          <div className="sticky top-24 border hairline rounded-2xl p-6 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)]">
+          <div className="sticky top-24 border hairline rounded-3xl p-6 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)]">
             <div className="flex items-baseline gap-2 mb-1">
-              <span className="text-[28px] font-bold tracking-tightest">₱{car.pricePerDay.toLocaleString()}</span>
-              <span className="text-[14px] text-gray-500">/ day</span>
+              <span className="text-[26px] font-bold tracking-tightest">₱{car.pricePerDay.toLocaleString()}</span>
+              <span className="text-[14px] text-foreground/60">/ day</span>
             </div>
-            <div className="flex items-center gap-1 text-[12px] text-gray-500 mb-5">
-              <Star size={11} className="fill-yellow-400 text-yellow-400" />
-              {rating.toFixed(2)} · {mergedReviews.length} {mergedReviews.length === 1 ? "review" : "reviews"}
+            <div className="flex items-center gap-1 text-[12px] text-foreground/60 mb-5">
+              <Star size={11} strokeWidth={0} className="fill-yellow-400 text-yellow-400" />
+              {rating.toFixed(2)} · {car.trips} {car.trips === 1 ? "booking" : "bookings"}
             </div>
 
             <div className="border hairline rounded-2xl overflow-hidden mb-3">
@@ -256,40 +325,54 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
             </div>
 
             {car.blackOnly ? (
-              <Link href="/black" className="block w-full bg-black text-white rounded-full py-3.5 font-semibold text-[14px] text-center">
+              <Link href="/black" className="tap block w-full bg-black text-white rounded-full py-3.5 font-semibold text-[14px] text-center">
                 Join Sakay Black to book
               </Link>
             ) : (
-              <button onClick={book} className="w-full bg-accent text-accent-fg rounded-full py-3.5 font-semibold text-[14px]">
+              <button onClick={book} className="tap w-full bg-accent text-accent-fg rounded-full py-3.5 font-semibold text-[14px]">
                 Reserve
               </button>
             )}
 
-            <div className="mt-4 space-y-2 text-[12px] text-foreground/70">
-              <div className="flex justify-between"><span>{days} {days === 1 ? "day" : "days"} × ₱{car.pricePerDay.toLocaleString()}</span><span>₱{(car.pricePerDay * days).toLocaleString()}</span></div>
-              <div className="flex justify-between"><span>Service fee</span><span>₱{Math.round(car.pricePerDay * days * 0.08).toLocaleString()}</span></div>
-              <div className="flex justify-between pt-2 border-t hairline mt-2 font-bold text-[14px] text-foreground"><span>Total</span><span>₱{(car.pricePerDay * days + Math.round(car.pricePerDay * days * 0.08)).toLocaleString()}</span></div>
+            <div className="text-center text-[11px] text-foreground/60 mt-2">You won&apos;t be charged yet</div>
+
+            <div className="mt-4 space-y-2 text-[13px] text-foreground/70">
+              <div className="flex justify-between underline-offset-2">
+                <span className="underline">₱{car.pricePerDay.toLocaleString()} × {days} {days === 1 ? "day" : "days"}</span>
+                <span>₱{subtotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between"><span className="underline">Service fee</span><span>₱{serviceFee.toLocaleString()}</span></div>
+              <div className="flex justify-between pt-3 border-t hairline mt-2 font-bold text-[15px] text-foreground"><span>Total</span><span>₱{total.toLocaleString()}</span></div>
             </div>
           </div>
         </aside>
       </div>
 
-      {/* Mobile sticky CTA — sits above the bottom nav + iOS safe area */}
-      <div className="md:hidden fixed inset-x-0 z-20 border-t hairline bg-background px-5 py-3 flex items-center justify-between" style={{ bottom: "calc(env(safe-area-inset-bottom) + 56px)" }}>
-        <div>
-          <div className="text-[18px] font-bold tracking-tight">
-            ₱{(car.pricePerDay * days).toLocaleString()}
-            <span className="text-[13px] text-foreground/50 font-normal"> · {days} {days === 1 ? "day" : "days"}</span>
+      {/* Mobile sticky booking bar — Airbnb pattern: total + dates on left, Reserve on right */}
+      <div
+        className="md:hidden fixed inset-x-0 z-20 border-t hairline bg-background px-5 py-3 flex items-center justify-between gap-3"
+        style={{ bottom: "calc(env(safe-area-inset-bottom) + 56px)" }}
+      >
+        <div className="min-w-0">
+          <div className="text-[16px] font-bold tracking-tight underline underline-offset-2">
+            ₱{total.toLocaleString()}
           </div>
-          <span className="text-[11px] text-foreground/50">{fmtShort(startDate)} – {fmtShort(endDate)}</span>
+          <div className="text-[11.5px] text-foreground/60 truncate">
+            For {days} {days === 1 ? "day" : "days"} · {fmtShort(startDate)} – {fmtShort(endDate)}
+          </div>
+          <div className="text-[10.5px] text-accent font-semibold mt-0.5">Free cancellation</div>
         </div>
         {car.blackOnly ? (
-          <Link href="/black" className="bg-black text-white rounded-full px-6 py-3 font-semibold text-[14px]">Join Sakay Black</Link>
+          <Link href="/black" className="tap bg-black text-white rounded-full px-7 py-3.5 font-semibold text-[14.5px] flex-shrink-0">
+            Join Black
+          </Link>
         ) : (
-          <button onClick={book} className="bg-accent text-accent-fg rounded-full px-6 py-3 font-semibold text-[14px]">Reserve</button>
+          <button onClick={book} className="tap bg-accent text-accent-fg rounded-full px-7 py-3.5 font-semibold text-[14.5px] flex-shrink-0">
+            Reserve
+          </button>
         )}
       </div>
-      <div className="md:hidden h-20" />
+      <div className="md:hidden h-24" />
     </div>
   );
 }
