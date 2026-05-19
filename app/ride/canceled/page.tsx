@@ -55,7 +55,7 @@ export default function Canceled() {
           <div className="flex-1 min-w-0">
             <div className="text-[14px] font-semibold tracking-tight">{driver.name}</div>
             <div className="flex items-center gap-1.5 text-[12px] text-gray-500 mt-0.5">
-              <Star size={11} className="fill-black" />
+              <Star size={11} className="fill-yellow-400 text-yellow-400" />
               {driver.rating}
               <span className="text-gray-400">·</span>
               <span className="truncate">{driver.vehicle} · {driver.plate}</span>

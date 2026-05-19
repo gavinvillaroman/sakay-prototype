@@ -45,7 +45,7 @@ export default function CarCard({ car, variant = "grid" }: { car: Car; variant?:
             </div>
           </div>
           <div className="flex items-center gap-1 text-[12px] flex-shrink-0">
-            <Star size={11} strokeWidth={2.5} className="fill-black" />
+            <Star size={11} strokeWidth={2.5} className="fill-yellow-400 text-yellow-400" />
             <span className="font-medium">{car.rating}</span>
           </div>
         </div>

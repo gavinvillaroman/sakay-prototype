@@ -46,7 +46,7 @@ export default function ExperienceDetail({ params }: { params: Promise<{ id: str
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="px-5 py-4 flex items-center gap-4 text-[13px] border-b hairline">
           <div className="flex items-center gap-1">
-            <Star size={12} className="fill-black" />
+            <Star size={12} className="fill-yellow-400 text-yellow-400" />
             <span className="font-semibold">{exp.rating}</span>
             <span className="text-gray-500">({exp.reviews})</span>
           </div>

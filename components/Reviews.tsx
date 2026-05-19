@@ -21,7 +21,7 @@ export default function Reviews({
   return (
     <div>
       <div className="flex items-center gap-2 mb-4">
-        <Star size={18} className="fill-black" />
+        <Star size={18} className="fill-yellow-400 text-yellow-400" />
         <span className="text-[18px] font-bold tracking-tight">
           {rating.toFixed(2)}
         </span>
@@ -63,7 +63,7 @@ export default function Reviews({
                       <Star
                         key={i}
                         size={10}
-                        className={i < r.rating ? "fill-black" : "fill-gray-300 stroke-gray-300"}
+                        className={i < r.rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-300 stroke-gray-300"}
                       />
                     ))}
                   </span>

@@ -73,7 +73,7 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
           </h1>
           <div className="flex items-center gap-3 mt-2 md:mt-3 text-[13px] md:text-[14px]">
             <div className="flex items-center gap-1">
-              <Star size={13} className="fill-black" />
+              <Star size={13} className="fill-yellow-400 text-yellow-400" />
               <span className="font-medium">{rating.toFixed(2)}</span>
               <span className="text-gray-500">({car.trips} trips)</span>
             </div>
@@ -168,7 +168,7 @@ export default function CarDetail({ params }: { params: Promise<{ id: string }> 
               <span className="text-[14px] text-gray-500">/ day</span>
             </div>
             <div className="flex items-center gap-1 text-[12px] text-gray-500 mb-5">
-              <Star size={11} className="fill-black" />
+              <Star size={11} className="fill-yellow-400 text-yellow-400" />
               {rating.toFixed(2)} · {mergedReviews.length} {mergedReviews.length === 1 ? "review" : "reviews"}
             </div>
 
